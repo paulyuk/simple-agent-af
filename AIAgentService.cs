@@ -19,7 +19,7 @@ public class AIAgentService : IAIAgentService
         var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") 
             ?? throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT is not set.");
         var deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") 
-            ?? "gpt-4o-mini";
+            ?? "gpt-4.1-mini";
         
         // Read instructions from file
         var instructions = File.ReadAllText("instructions.md");

@@ -1,16 +1,8 @@
 ### Health Check
-GET http://localhost:7071/api/Health
+GET http://localhost:7071/api/health
 
 ### Process Message - Simple Request
-POST http://localhost:7071/api/ProcessMessage
-Content-Type: application/json
-
-{
-  "message": "Tell me a joke about pirates"
-}
-
-### Process Message - Another Request
-POST http://localhost:7071/api/ProcessMessage
+POST http://localhost:7071/api/chat
 Content-Type: application/json
 
 {

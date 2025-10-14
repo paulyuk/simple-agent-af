@@ -356,3 +356,28 @@ Desktop.ini
 .env.local
 .env.production
 .env.development
+
+# Azure Functions
+local.settings.json
+*.azurefunctions
+.azure/
+.azuretools/
+
+# Function App build output
+wwwroot/
+
+# Azure Functions Core Tools
+.vscode/extensions.json
+
+# Azurite (local storage emulator)
+__azurite_db*__.json
+__blobstorage__/
+__queuestorage__/
+__tablestorage__/
+
+# Application Insights
+ApplicationInsights.config
+
+# Package restore
+**/packages/*
+!**/packages/build/
