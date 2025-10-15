@@ -4,7 +4,7 @@ A simple AI agent application using Azure OpenAI and Microsoft.Agents.AI framewo
 
 ## Description
 
-This application demonstrates how to create a simple AI agent that can generate jokes using Azure OpenAI. The agent is configured to be good at telling jokes and provides both synchronous and streaming response capabilities.
+This application demonstrates how to create a simple AI agent using Azure OpenAI and the Agent Framework. The agent is configured with robot directives and provides both synchronous and streaming response capabilities.
 
 ## Prerequisites
 
@@ -35,12 +35,16 @@ Set the following environment variables:
 dotnet run
 ```
 
-The application will ask the AI agent to tell a joke about a pirate, first with a synchronous call and then with streaming output.
+The application will ask the AI agent about the three laws of robotics, first with a synchronous call and then with streaming output.
 
 ## Authentication
 
-The application uses `AzureCliCredential` for authentication. Make sure you're logged in to Azure CLI:
+The application uses `DefaultAzureCredential` for authentication. Make sure you're logged in to Azure CLI:
 
 ```bash
 az login
 ```
+
+## Learn More
+
+For more information about building Azure AI Agents using Agent Framework 2.0, see the [official documentation](https://learn.microsoft.com/en-us/agent-framework/).
