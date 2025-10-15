@@ -8,3 +8,13 @@ Content-Type: application/json
 {
   "message": "What are the three laws of robotics?"
 }
+
+### Health Check (Azure)
+GET https://<your func name>.azurewebsites.net/api/health?code=<your key>
+### Process Message - Simple Request (Azure)
+POST https://<your func name>.azurewebsites.net/api/chat?code=<your key>
+Content-Type: application/json
+
+{
+  "message": "What are the three laws of robotics?"
+}

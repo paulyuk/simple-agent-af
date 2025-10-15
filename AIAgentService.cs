@@ -21,8 +21,12 @@ public class AIAgentService : IAIAgentService
         var deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") 
             ?? "gpt-4.1-mini";
         
-        // Read instructions from file
-        var instructions = File.ReadAllText("instructions.md");
+        // Read instructions from file - use app directory path for Azure Functions
+        var appDirectory = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot") 
+            ?? Environment.GetEnvironmentVariable("HOME") + "/site/wwwroot" 
+            ?? Directory.GetCurrentDirectory();
+        var instructionsPath = Path.Combine(appDirectory, "instructions.md");
+        var instructions = File.ReadAllText(instructionsPath);
 
         _agent = new AzureOpenAIClient(
             new Uri(endpoint),

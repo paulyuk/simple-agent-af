@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
+    <UserSecretsId>ddef2e66-96a6-454c-8e34-d57348556f3e</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

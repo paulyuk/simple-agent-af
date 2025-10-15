@@ -381,3 +381,7 @@ ApplicationInsights.config
 # Package restore
 **/packages/*
 !**/packages/build/
+
+# Azure Developer CLI
+.azure/
+.env.local
