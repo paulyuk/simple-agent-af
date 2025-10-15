@@ -6,6 +6,8 @@ A simple AI agent application using Azure AI Foundry models for OpenAI and Micro
 
 This application demonstrates how to create a simple AI agent using Azure OpenAI and the Agent Framework. The agent is configured with robot directives and provides both synchronous and streaming response capabilities.
 
+<img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/b379cb39-ba54-4b76-9b5d-1847f5da1e77" />
+
 ## Prerequisites
 
 - .NET 9.0 or later
