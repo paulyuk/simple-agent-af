@@ -1,6 +1,6 @@
-# Simple Agent AF
+# Simple Agent Framework Quickstart (.NET 9)
 
-A simple AI agent application using Azure OpenAI and Microsoft.Agents.AI framework.
+A simple AI agent application using Azure AI Foundry models for OpenAI and Microsoft Agent Framework 2.0.
 
 ## Description
 
