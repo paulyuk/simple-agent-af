@@ -343,8 +343,6 @@ module postCapabilityHostCreationRoleAssignments './agent/post-capability-host-r
   }
   dependsOn: [ aiProjectCapabilityHost ]
 }
-  dependsOn: [ aiProjectCapabilityHost ]
-}
 
 // Define the configuration object locally to pass to the modules
 var storageEndpointConfig = {
