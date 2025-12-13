@@ -6,9 +6,12 @@ param aiServicesAccountName string
 param projectCapHost string
 param accountCapHost string
 
-var threadConnections = ['${cosmosDbConnection}']
+param enableAzureSearch bool = false
+param enableCosmosDb bool = false
+
+var threadConnections = enableCosmosDb ? ['${cosmosDbConnection}'] : []
 var storageConnections = ['${azureStorageConnection}']
-var vectorStoreConnections = ['${aiSearchConnection}']
+var vectorStoreConnections = enableAzureSearch ? ['${aiSearchConnection}'] : []
 
 
 resource account 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = {

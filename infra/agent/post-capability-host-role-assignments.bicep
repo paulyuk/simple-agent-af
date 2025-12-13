@@ -8,6 +8,8 @@ param aiProjectWorkspaceId string
 param aiStorageAccountName string
 param cosmosDbAccountName string
 
+param enableCosmosDb bool = false
+
 // Assignments for Storage Account containers
 // ------------------------------------------------------------------
 
@@ -40,42 +42,42 @@ var userThreadName = '${aiProjectWorkspaceId}-thread-message-store'
 var systemThreadName = '${aiProjectWorkspaceId}-system-thread-message-store'
 var entityStoreName = '${aiProjectWorkspaceId}-agent-entity-store'
 
-resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' existing = {
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' existing = if (enableCosmosDb) {
   name: cosmosDbAccountName
 }
 
 // Reference existing database
-resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-12-01-preview' existing = {
+resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-12-01-preview' existing = if (enableCosmosDb) {
   parent: cosmosAccount
   name: 'enterprise_memory'
 }
 
-resource containerUserMessageStore 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' existing = {
+resource containerUserMessageStore 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' existing = if (enableCosmosDb) {
   parent: database
   name: userThreadName
 }
 
-resource containerSystemMessageStore 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' existing = {
+resource containerSystemMessageStore 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' existing = if (enableCosmosDb) {
   parent: database
   name: systemThreadName
 }
 
-resource containerEntityStore 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' existing = {
+resource containerEntityStore 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-12-01-preview' existing = if (enableCosmosDb) {
   parent: database
   name: entityStoreName
 }
 
-var roleDefinitionId = resourceId(
+var roleDefinitionId = enableCosmosDb ? resourceId(
   'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions',
   cosmosDbAccountName,
   '00000000-0000-0000-0000-000000000002'
-)
+) : ''
 
-var scopeSystemContainer = '${cosmosAccount.id}/dbs/enterprise_memory/colls/${systemThreadName}'
-var scopeUserContainer = '${cosmosAccount.id}/dbs/enterprise_memory/colls/${userThreadName}'
-var scopeEntityContainer = '${cosmosAccount.id}/dbs/enterprise_memory/colls/${entityStoreName}'
+var scopeSystemContainer = enableCosmosDb ? '${cosmosAccount.id}/dbs/enterprise_memory/colls/${systemThreadName}' : ''
+var scopeUserContainer = enableCosmosDb ? '${cosmosAccount.id}/dbs/enterprise_memory/colls/${userThreadName}' : ''
+var scopeEntityContainer = enableCosmosDb ? '${cosmosAccount.id}/dbs/enterprise_memory/colls/${entityStoreName}' : ''
 
-resource containerRoleAssignmentUserContainer 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-15' = {
+resource containerRoleAssignmentUserContainer 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-15' = if (enableCosmosDb) {
   parent: cosmosAccount
   name: guid(aiProjectWorkspaceId, containerUserMessageStore.id, roleDefinitionId, aiProjectPrincipalId)
   properties: {
@@ -85,7 +87,7 @@ resource containerRoleAssignmentUserContainer 'Microsoft.DocumentDB/databaseAcco
   }
 }
 
-resource containerRoleAssignmentSystemContainer 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-15' = {
+resource containerRoleAssignmentSystemContainer 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-15' = if (enableCosmosDb) {
   parent: cosmosAccount
   name: guid(aiProjectWorkspaceId, containerSystemMessageStore.id, roleDefinitionId, aiProjectPrincipalId)
   properties: {
@@ -95,7 +97,7 @@ resource containerRoleAssignmentSystemContainer 'Microsoft.DocumentDB/databaseAc
   }
 }
 
-resource containerRoleAssignmentEntityContainer 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-15' = {
+resource containerRoleAssignmentEntityContainer 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2022-05-15' = if (enableCosmosDb) {
   parent: cosmosAccount
   name: guid(aiProjectWorkspaceId, containerEntityStore.id, roleDefinitionId, aiProjectPrincipalId)
   properties: {

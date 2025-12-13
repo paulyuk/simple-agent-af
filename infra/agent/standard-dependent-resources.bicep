@@ -12,8 +12,14 @@ param aiServicesName string
 @description('The name of the AI Search resource')
 param aiSearchName string
 
+@description('Enable Azure AI Search resource creation')
+param enableAzureSearch bool = false
+
 @description('The name of the Cosmos DB account')
 param cosmosDbName string
+
+@description('Enable Cosmos DB resource creation')
+param enableCosmosDb bool = false
 
 @description('Name of the storage account')
 param storageName string
@@ -49,9 +55,9 @@ param aiStorageAccountResourceId string
 param aiCosmosDbAccountResourceId string
 
 var aiServiceExists = aiServiceAccountResourceId != ''
-var acsExists = aiSearchServiceResourceId != ''
+var acsExists = aiSearchServiceResourceId != '' || !enableAzureSearch
 var aiStorageExists = aiStorageAccountResourceId != ''
-var cosmosExists = aiCosmosDbAccountResourceId != ''
+var cosmosExists = aiCosmosDbAccountResourceId != '' || !enableCosmosDb
 
 // Create an AI Service account and model deployment if it doesn't already exist
 
@@ -179,9 +185,9 @@ output aiServiceAccountResourceGroupName string = resourceGroup().name
 output aiServiceAccountSubscriptionId string = subscription().subscriptionId 
 
 output aiSearchName string = aiSearchName  
-output aisearchID string = aiSearch.id
-output aiSearchServiceResourceGroupName string = resourceGroup().name
-output aiSearchServiceSubscriptionId string = subscription().subscriptionId
+output aisearchID string = enableAzureSearch ? aiSearch.id : ''
+output aiSearchServiceResourceGroupName string = enableAzureSearch ? resourceGroup().name : ''
+output aiSearchServiceSubscriptionId string = enableAzureSearch ? subscription().subscriptionId : ''
 
 output storageAccountName string = storageName
 output storageId string = storage.id
@@ -189,6 +195,6 @@ output storageAccountResourceGroupName string = resourceGroup().name
 output storageAccountSubscriptionId string = subscription().subscriptionId
 
 output cosmosDbAccountName string = cosmosDbName
-output cosmosDbAccountId string = cosmosDbAccount.id
-output cosmosDbAccountResourceGroupName string = resourceGroup().name
-output cosmosDbAccountSubscriptionId string = subscription().subscriptionId
+output cosmosDbAccountId string = enableCosmosDb ? cosmosDbAccount.id : ''
+output cosmosDbAccountResourceGroupName string = enableCosmosDb ? resourceGroup().name : ''
+output cosmosDbAccountSubscriptionId string = enableCosmosDb ? subscription().subscriptionId : ''

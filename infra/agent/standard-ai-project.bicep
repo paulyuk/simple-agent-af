@@ -18,6 +18,12 @@ param aiProjectFriendlyName string = aiProjectName
 @description('AI Project description')
 param aiProjectDescription string
 
+@description('Enable Azure AI Search for vector store and search capabilities')
+param enableAzureSearch bool = false
+
+@description('Enable Cosmos DB for agent thread storage')
+param enableCosmosDb bool = false
+
 @description('Cosmos DB Account for agent thread storage')
 param cosmosDbAccountName string
 param cosmosDbAccountSubscriptionId string
@@ -33,7 +39,7 @@ param aiSearchName string
 param aiSearchSubscriptionId string
 param aiSearchResourceGroupName string
 
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' existing = {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' existing = if (enableCosmosDb) {
   name: cosmosDbAccountName
   scope: resourceGroup(cosmosDbAccountSubscriptionId, cosmosDbAccountResourceGroupName)
 }
@@ -43,7 +49,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing 
   scope: resourceGroup(storageAccountSubscriptionId, storageAccountResourceGroupName)
 }
 
-resource aiSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' existing = {
+resource aiSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' existing = if (enableAzureSearch) {
   name: aiSearchName
   scope: resourceGroup(aiSearchSubscriptionId, aiSearchResourceGroupName)
 }
@@ -65,7 +71,7 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
     displayName: aiProjectFriendlyName
   }
 
-  resource project_connection_cosmosdb_account 'connections@2025-04-01-preview' = {
+  resource project_connection_cosmosdb_account 'connections@2025-04-01-preview' = if (enableCosmosDb) {
     name: cosmosDbAccountName
     properties: {
       category: 'CosmosDB'
@@ -93,7 +99,7 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-pre
     }
   }
 
-  resource project_connection_azureai_search 'connections@2025-04-01-preview' = {
+  resource project_connection_azureai_search 'connections@2025-04-01-preview' = if (enableAzureSearch) {
     name: aiSearchName
     properties: {
       category: 'CognitiveSearch'

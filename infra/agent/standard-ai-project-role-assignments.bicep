@@ -14,6 +14,10 @@ param integrationStorageAccountName string
 param functionAppManagedIdentityPrincipalId string = ''
 param allowFunctionAppIdentityPrincipal bool = true // Flag to enable function app identity role assignments
 
+// Parameters for optional resources
+param enableAzureSearch bool = false
+param enableCosmosDb bool = false
+
 // Assignments for AI Services
 // ------------------------------------------------------------------
 
@@ -102,7 +106,7 @@ resource cognitiveServicesUserRoleAssignmentUser 'Microsoft.Authorization/roleAs
 // Assignments for AI Search Service
 // ------------------------------------------------------------------
 
-resource aiSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' existing = {
+resource aiSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' existing = if (enableAzureSearch) {
   name: aiSearchName
 }
 
@@ -110,7 +114,7 @@ resource aiSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' ex
 
 var searchIndexDataContributorRoleDefinitionId = '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
 
-resource searchIndexDataContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource searchIndexDataContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableAzureSearch) {
   scope: aiSearchService
   name: guid(aiProjectPrincipalId, searchIndexDataContributorRoleDefinitionId, aiSearchService.id)
   properties: {
@@ -124,7 +128,7 @@ resource searchIndexDataContributorAssignment 'Microsoft.Authorization/roleAssig
 
 var searchServiceContributorRoleDefinitionId = '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
 
-resource searchServiceContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource searchServiceContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableAzureSearch) {
   scope: aiSearchService
   name: guid(aiProjectPrincipalId, searchServiceContributorRoleDefinitionId, aiSearchService.id)
   properties: {
@@ -158,7 +162,7 @@ resource storageBlobDataContributorRoleAssignmentProject 'Microsoft.Authorizatio
 // Assignments for Cosmos DB
 // ------------------------------------------------------------------
 
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' existing = {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' existing = if (enableCosmosDb) {
   name: aiCosmosDbName
 }
 
@@ -166,7 +170,7 @@ resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-previ
 
 var cosmosDbOperatorRoleDefinitionId = '230815da-be43-4aae-9cb4-875f7bd000aa'
 
-resource cosmosDbOperatorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource cosmosDbOperatorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableCosmosDb) {
   scope: cosmosDbAccount
   name: guid(aiProjectPrincipalId, cosmosDbOperatorRoleDefinitionId, cosmosDbAccount.id)
   properties: {

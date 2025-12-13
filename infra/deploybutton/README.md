@@ -34,16 +34,18 @@ When deploying, you will be asked to provide:
 - **location**: The Azure region where resources will be deployed
 
 All other parameters use secure defaults optimized for the Simple Agent Framework:
-- Model: GPT-4o-mini (2024-07-18)
+- Model: GPT-4.1-mini (2024-07-18)
 - Model SKU: GlobalStandard
 - Model Capacity: 50
+- Azure AI Search: Disabled by default (set `enableAzureSearch=true` to enable)
+- Cosmos DB: Disabled by default (set `enableCosmosDb=true` to enable)
 
 ## What Gets Deployed
 
 - Azure Functions app (Flex Consumption plan with .NET 9)
-- Azure AI Services with GPT-4o-mini deployment
-- Azure AI Search
-- Cosmos DB (for agent state/thread storage)
+- Azure AI Services with GPT-4.1-mini deployment
 - Storage Account (for function app and AI workspace)
 - Application Insights and Log Analytics (for monitoring)
 - All necessary role assignments and managed identities
+- Optional: Azure AI Search (for vector store, disabled by default)
+- Optional: Cosmos DB (for agent state/thread storage, disabled by default)

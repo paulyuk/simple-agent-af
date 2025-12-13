@@ -32,12 +32,12 @@ azd up
 
 **Resources created:**
 - Azure Functions app (Flex Consumption plan)
-- Azure AI Services with GPT-4o-mini model deployment
-- Azure AI Search
-- Cosmos DB (for agent thread storage)
+- Azure AI Services with GPT-4.1-mini model deployment
 - Storage Account (for functions and AI workspace)
 - Application Insights and Log Analytics
 - All necessary managed identities and role assignments
+- Optional: Azure AI Search (disabled by default, enable with `enableAzureSearch=true`)
+- Optional: Cosmos DB for agent thread storage (disabled by default, enable with `enableCosmosDb=true`)
 
 ### Option 2: Deploy to Azure Button (One-Click Deployment)
 
@@ -81,10 +81,12 @@ az deployment sub create \
 
 All other parameters have secure defaults, but you can override them:
 
-- **modelName**: Default is "gpt-4o-mini"
+- **modelName**: Default is "gpt-4.1-mini"
 - **modelVersion**: Default is "2024-07-18"
 - **modelSkuName**: Default is "GlobalStandard"
 - **modelCapacity**: Default is 50
+- **enableAzureSearch**: Default is `false` (set to `true` to enable Azure AI Search for vector store)
+- **enableCosmosDb**: Default is `false` (set to `true` to enable Cosmos DB for agent thread storage)
 
 See [infra/main.bicep](infra/main.bicep) for the full list of parameters.
 

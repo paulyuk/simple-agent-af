@@ -25,9 +25,10 @@ For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 ### What Gets Deployed
 
 - Azure Functions app with .NET 9 runtime (Flex Consumption plan)
-- Azure AI services with GPT-4o-mini model
-- Azure AI Search and Cosmos DB for agent capabilities
+- Azure AI services with GPT-4.1-mini model
 - Storage, monitoring, and all necessary role assignments
+- Optional: Azure AI Search (for vector store capabilities, disabled by default)
+- Optional: Cosmos DB (for agent thread storage, disabled by default)
 
 ## Prerequisites
 

@@ -56,8 +56,14 @@ param aiProjectFriendlyName string = 'Simple AI Agent Project'
 @description('Description of your Azure AI resource displayed in AI studio')
 param aiProjectDescription string = 'This is a simple AI agent project for Azure Functions.'
 
+@description('Enable Azure AI Search for vector store and search capabilities')
+param enableAzureSearch bool = false
+
 @description('Name of the Azure AI Search account')
 param aiSearchName string = 'agent-ai-search'
+
+@description('Enable Cosmos DB for agent thread storage')
+param enableCosmosDb bool = false
 
 @description('Name for capabilityHost.')
 param accountCapabilityHostName string = 'caphostacc'
@@ -69,7 +75,7 @@ param projectCapabilityHostName string = 'caphostproj'
 param aiServicesName string = 'agent-ai-services'
 
 @description('Model name for deployment')
-param modelName string = 'gpt-4o-mini'
+param modelName string = 'gpt-4.1-mini'
 
 @description('Model format for deployment')
 param modelFormat string = 'OpenAI'
@@ -210,6 +216,8 @@ module aiDependencies './agent/standard-dependent-resources.bicep' = {
     aiSearchName: '${aiSearchName}${uniqueSuffix}'
     cosmosDbName: '${cosmosDbName}${uniqueSuffix}'
     tags: tags
+    enableAzureSearch: enableAzureSearch
+    enableCosmosDb: enableCosmosDb
 
      // Model deployment parameters
      modelName: modelName
@@ -237,6 +245,8 @@ module aiProject './agent/standard-ai-project.bicep' = {
     aiProjectDescription: aiProjectDescription
     location: location
     tags: tags
+    enableAzureSearch: enableAzureSearch
+    enableCosmosDb: enableCosmosDb
     
     // dependent resources
     aiSearchName: aiDependencies.outputs.aiSearchName
@@ -298,6 +308,8 @@ module projectRoleAssignments './agent/standard-ai-project-role-assignments.bice
     integrationStorageAccountName: storage.outputs.name
     functionAppManagedIdentityPrincipalId: apiUserAssignedIdentity.outputs.principalId
     allowFunctionAppIdentityPrincipal: true // Enable function app identity role assignments
+    enableAzureSearch: enableAzureSearch
+    enableCosmosDb: enableCosmosDb
   }
 }
 
@@ -313,6 +325,8 @@ module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bice
 
     accountCapHost: '${accountCapabilityHostName}${uniqueSuffix}'
     projectCapHost: '${projectCapabilityHostName}${uniqueSuffix}'
+    enableAzureSearch: enableAzureSearch
+    enableCosmosDb: enableCosmosDb
   }
   dependsOn: [ projectRoleAssignments ]
 }
@@ -325,7 +339,10 @@ module postCapabilityHostCreationRoleAssignments './agent/post-capability-host-r
     aiProjectWorkspaceId: aiProject.outputs.projectWorkspaceId
     aiStorageAccountName: aiDependencies.outputs.storageAccountName
     cosmosDbAccountName: aiDependencies.outputs.cosmosDbAccountName
+    enableCosmosDb: enableCosmosDb
   }
+  dependsOn: [ aiProjectCapabilityHost ]
+}
   dependsOn: [ aiProjectCapabilityHost ]
 }
 
