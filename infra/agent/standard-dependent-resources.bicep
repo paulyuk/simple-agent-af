@@ -55,9 +55,9 @@ param aiStorageAccountResourceId string
 param aiCosmosDbAccountResourceId string
 
 var aiServiceExists = aiServiceAccountResourceId != ''
-var acsExists = aiSearchServiceResourceId != '' || !enableAzureSearch
+var skipAzureSearchCreation = aiSearchServiceResourceId != '' || !enableAzureSearch
 var aiStorageExists = aiStorageAccountResourceId != ''
-var cosmosExists = aiCosmosDbAccountResourceId != '' || !enableCosmosDb
+var skipCosmosDbCreation = aiCosmosDbAccountResourceId != '' || !enableCosmosDb
 
 // Create an AI Service account and model deployment if it doesn't already exist
 
@@ -103,7 +103,7 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
 }
 
 // Create an AI Search Service if it doesn't already exist
-resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = if(!acsExists) {
+resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = if(!skipAzureSearchCreation) {
   name: aiSearchName
   location: location
   tags: tags
@@ -154,7 +154,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = if(!aiStorageE
 
 var canaryRegions = ['eastus2euap', 'centraluseuap']
 var cosmosDbRegion = contains(canaryRegions, location) ? 'eastus2' : location
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = if(!cosmosExists) {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = if(!skipCosmosDbCreation) {
   name: cosmosDbName
   location: cosmosDbRegion
   kind: 'GlobalDocumentDB'
@@ -185,7 +185,7 @@ output aiServiceAccountResourceGroupName string = resourceGroup().name
 output aiServiceAccountSubscriptionId string = subscription().subscriptionId 
 
 output aiSearchName string = aiSearchName  
-output aisearchID string = !acsExists ? aiSearch.id : aiSearchServiceResourceId
+output aisearchID string = !skipAzureSearchCreation ? aiSearch.id : aiSearchServiceResourceId
 output aiSearchServiceResourceGroupName string = enableAzureSearch ? resourceGroup().name : ''
 output aiSearchServiceSubscriptionId string = enableAzureSearch ? subscription().subscriptionId : ''
 
@@ -195,6 +195,6 @@ output storageAccountResourceGroupName string = resourceGroup().name
 output storageAccountSubscriptionId string = subscription().subscriptionId
 
 output cosmosDbAccountName string = cosmosDbName
-output cosmosDbAccountId string = !cosmosExists ? cosmosDbAccount.id : aiCosmosDbAccountResourceId
+output cosmosDbAccountId string = !skipCosmosDbCreation ? cosmosDbAccount.id : aiCosmosDbAccountResourceId
 output cosmosDbAccountResourceGroupName string = enableCosmosDb ? resourceGroup().name : ''
 output cosmosDbAccountSubscriptionId string = enableCosmosDb ? subscription().subscriptionId : ''
