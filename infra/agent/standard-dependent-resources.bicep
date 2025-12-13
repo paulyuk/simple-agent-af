@@ -186,15 +186,15 @@ output aiServiceAccountSubscriptionId string = subscription().subscriptionId
 
 output aiSearchName string = aiSearchName  
 output aisearchID string = !skipAzureSearchCreation ? aiSearch.id : aiSearchServiceResourceId
-output aiSearchServiceResourceGroupName string = enableAzureSearch ? resourceGroup().name : ''
-output aiSearchServiceSubscriptionId string = enableAzureSearch ? subscription().subscriptionId : ''
+output aiSearchServiceResourceGroupName string = !skipAzureSearchCreation ? resourceGroup().name : ''
+output aiSearchServiceSubscriptionId string = !skipAzureSearchCreation ? subscription().subscriptionId : ''
 
 output storageAccountName string = storageName
 output storageId string = !aiStorageExists ? storage.id : aiStorageAccountResourceId
-output storageAccountResourceGroupName string = resourceGroup().name
-output storageAccountSubscriptionId string = subscription().subscriptionId
+output storageAccountResourceGroupName string = !aiStorageExists ? resourceGroup().name : ''
+output storageAccountSubscriptionId string = !aiStorageExists ? subscription().subscriptionId : ''
 
 output cosmosDbAccountName string = cosmosDbName
 output cosmosDbAccountId string = !skipCosmosDbCreation ? cosmosDbAccount.id : aiCosmosDbAccountResourceId
-output cosmosDbAccountResourceGroupName string = enableCosmosDb ? resourceGroup().name : ''
-output cosmosDbAccountSubscriptionId string = enableCosmosDb ? subscription().subscriptionId : ''
+output cosmosDbAccountResourceGroupName string = !skipCosmosDbCreation ? resourceGroup().name : ''
+output cosmosDbAccountSubscriptionId string = !skipCosmosDbCreation ? subscription().subscriptionId : ''
