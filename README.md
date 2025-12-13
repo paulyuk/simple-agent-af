@@ -1,16 +1,16 @@
-# Simple Agent Framework Quickstart (.NET 9)
+# Simple Agent Framework Quickstart (.NET 10)
 
-A simple AI agent application using Azure AI Foundry models for OpenAI and Microsoft Agent Framework 2.0.
+A simple AI agent application using Azure OpenAI with the Azure.AI.OpenAI SDK and Microsoft Agent Framework 2.0.
 
 ## Description
 
-This application demonstrates how to create a simple AI agent using Azure OpenAI and the Agent Framework. The agent is configured with robot directives and provides both synchronous and streaming response capabilities.
+This application demonstrates how to create a simple AI agent using the Azure OpenAI SDK configured for Azure OpenAI endpoints. The agent is configured with robot directives and provides an interactive conversational loop.
 
 <img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/b379cb39-ba54-4b76-9b5d-1847f5da1e77" />
 
 ## Prerequisites
 
-- .NET 9.0 or later
+- .NET 10
 - Azure OpenAI service endpoint and deployment
 - Azure CLI for authentication
 
@@ -23,9 +23,11 @@ Set the following environment variables:
 
 ## Dependencies
 
-- Azure.AI.OpenAI (2.1.0)
+- Azure.AI.OpenAI (2.1.0) - Azure OpenAI SDK
 - Azure.Identity (1.17.0)  
-- Microsoft.Agents.AI.OpenAI (1.0.0-preview.251009.1)
+- Microsoft.Agents.AI.OpenAI (1.0.0-preview.251204.1)
+
+**Note**: This project uses the Azure.AI.OpenAI SDK (which is built on the official OpenAI SDK) to connect to Azure OpenAI endpoints.
 
 ## Usage
 
@@ -36,8 +38,9 @@ Set the following environment variables:
 ```bash
 dotnet run
 ```
+4. Enter a message like `what are the laws?`
 
-The application will ask the AI agent about the three laws of robotics, first with a synchronous call and then with streaming output.
+The application will start an interactive conversation loop where you can ask questions. Type 'exit' or 'quit' to end the session.
 
 ## Authentication
 

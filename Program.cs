@@ -1,5 +1,7 @@
 using System;
+using System.ClientModel;
 using Azure.AI.OpenAI;
+using Azure.Core;
 using Azure.Identity;
 using Microsoft.Agents.AI;
 using OpenAI;
@@ -14,17 +16,52 @@ var instructions = """
     Objective: Give me the TLDR in exactly 5 words.
     """;
 
-AIAgent agent = new AzureOpenAIClient(
-  new Uri(endpoint),
-  new DefaultAzureCredential())
+// Get Azure token for authentication
+var tokenCredential = new DefaultAzureCredential();
+
+// Create OpenAI client configured for Azure endpoint using AzureOpenAI factory
+var openAIClient = new AzureOpenAIClient(
+    new Uri(endpoint),
+    tokenCredential);
+
+AIAgent agent = openAIClient
     .GetChatClient(deploymentName)
     .CreateAIAgent(instructions);
 
-// Invoke the agent and output the text result.
-Console.WriteLine(await agent.RunAsync("What are the three laws of robotics?"));
+// Optional: Add MCP tool from remote URL
+// agent.AddMcpServer("https://example.com/mcp-server");
 
-// Invoke the agent with streaming support.
-await foreach (var update in agent.RunStreamingAsync("What are the three laws of robotics?"))
+// Optional: Add MCP tool with authentication
+// agent.AddMcpServer("https://example.com/mcp-server", new HttpClient
+// {
+//     DefaultRequestHeaders = 
+//     {
+//         { "Authorization", "Bearer YOUR_TOKEN_HERE" }
+//     }
+// });
+
+// Stay in a loop for continuous conversation
+while (true)
 {
-    Console.WriteLine(update);
+    Console.Write("Enter your message: ");
+    var userMessage = Console.ReadLine();
+    
+    // Check for exit commands
+    if (string.IsNullOrWhiteSpace(userMessage) || 
+        userMessage.Equals("exit", StringComparison.OrdinalIgnoreCase) || 
+        userMessage.Equals("quit", StringComparison.OrdinalIgnoreCase))
+    {
+        Console.WriteLine("Goodbye!");
+        break;
+    }
+
+    try
+    {
+        // Invoke the agent and output the text result.
+        Console.WriteLine("\n" + await agent.RunAsync(userMessage) + "\n");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}\n");
+    }
 }
