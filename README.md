@@ -8,8 +8,34 @@ This application demonstrates how to create a simple AI agent using the Azure Op
 
 <img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/b379cb39-ba54-4b76-9b5d-1847f5da1e77" />
 
+## Deploy to Azure
+
+Deploy this application to Azure using Azure Developer CLI (azd):
+
+```bash
+# Install Azure Developer CLI if you haven't already
+# See: https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd
+
+# Login to Azure
+azd auth login
+
+# Provision and deploy the application
+azd up
+```
+
+The deployment will:
+- Create an Azure Functions app with .NET 9 runtime
+- Set up Azure AI services with GPT-4o-mini model
+- Configure Azure AI Search and Cosmos DB for agent capabilities
+- Create all necessary storage and monitoring resources
+
 ## Prerequisites
 
+### For Azure Deployment
+- [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
+- Azure subscription
+
+### For Local Development
 - .NET 10
 - Azure OpenAI service endpoint and deployment
 - Azure CLI for authentication
@@ -29,10 +55,12 @@ Set the following environment variables:
 
 **Note**: This project uses the Azure.AI.OpenAI SDK (which is built on the official OpenAI SDK) to connect to Azure OpenAI endpoints.
 
-## Usage
+## Local Development Usage
+
+After deploying to Azure or setting up your own Azure OpenAI resources:
 
 1. Clone the repository
-2. Set the required environment variables
+2. Set the required environment variables (or use `azd env get-values` after deployment)
 3. Run the application:
 
 ```bash

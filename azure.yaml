@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: simple-agent-framework-functions-dotnet
+metadata:
+  template: simple-agent-framework-functions-dotnet@2.0.0
+services:
+  api:
+    project: ./
+    host: function
+    language: dotnet
+hooks:
+  postprovision:
+    posix:
+      shell: sh
+      run: ./infra/scripts/setuplocalenvironment.sh
+      interactive: true
+      continueOnError: false
+    windows:
+      shell: pwsh
+      run: ./infra/scripts/setuplocalenvironment.ps1
+      interactive: true
+      continueOnError: false
+  postdeploy:
+    shell: sh
+    run: echo "Deployment completed successfully"
+    continueOnError: false
