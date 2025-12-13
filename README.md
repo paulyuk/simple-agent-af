@@ -10,6 +10,14 @@ This application demonstrates how to create a simple AI agent using the Azure Op
 
 ## Deploy to Azure
 
+### Option 1: One-Click Deploy (Coming Soon)
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
+
+> **Note**: The ARM template will be automatically generated when the main branch is updated. See [infra/deploybutton/README.md](infra/deploybutton/README.md) for details.
+
+### Option 2: Azure Developer CLI (Recommended)
+
 Deploy this application to Azure using Azure Developer CLI (azd):
 
 ```bash
