@@ -10,32 +10,24 @@ This application demonstrates how to create a simple AI agent using the Azure Op
 
 ## Deploy to Azure
 
-### Option 1: One-Click Deploy (Coming Soon)
+### Quick Start Options
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
+1. **One-Click Deploy**: [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
+   
+2. **Azure Developer CLI** (Recommended):
+   ```bash
+   azd auth login
+   azd up
+   ```
 
-> **Note**: The ARM template will be automatically generated when the main branch is updated. See [infra/deploybutton/README.md](infra/deploybutton/README.md) for details.
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-### Option 2: Azure Developer CLI (Recommended)
+### What Gets Deployed
 
-Deploy this application to Azure using Azure Developer CLI (azd):
-
-```bash
-# Install Azure Developer CLI if you haven't already
-# See: https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd
-
-# Login to Azure
-azd auth login
-
-# Provision and deploy the application
-azd up
-```
-
-The deployment will:
-- Create an Azure Functions app with .NET 9 runtime
-- Set up Azure AI services with GPT-4o-mini model
-- Configure Azure AI Search and Cosmos DB for agent capabilities
-- Create all necessary storage and monitoring resources
+- Azure Functions app with .NET 9 runtime (Flex Consumption plan)
+- Azure AI services with GPT-4o-mini model
+- Azure AI Search and Cosmos DB for agent capabilities
+- Storage, monitoring, and all necessary role assignments
 
 ## Prerequisites
 
