@@ -295,7 +295,7 @@ module projectRoleAssignments './agent/standard-ai-project-role-assignments.bice
   }
 }
 
-module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bicep' = {
+module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bicep' = if (enableAzureSearch && enableCosmosDb) {
   name: 'capabilityhost${projectName}${uniqueSuffix}deployment'
   scope: rg
   params: {
@@ -313,7 +313,7 @@ module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bice
   dependsOn: [ projectRoleAssignments ]
 }
 
-module postCapabilityHostCreationRoleAssignments './agent/post-capability-host-role-assignments.bicep' = {
+module postCapabilityHostCreationRoleAssignments './agent/post-capability-host-role-assignments.bicep' = if (enableAzureSearch && enableCosmosDb) {
   name: 'postcaphostra${projectName}${uniqueSuffix}deployment'
   scope: rg
   params: {

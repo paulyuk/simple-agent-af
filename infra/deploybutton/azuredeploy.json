@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "2674380991839498738"
+      "templateHash": "14648736736948437999"
     }
   },
   "parameters": {
@@ -16445,6 +16445,7 @@
       ]
     },
     {
+      "condition": "[and(parameters('enableAzureSearch'), parameters('enableCosmosDb'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('capabilityhost{0}{1}deployment', variables('projectName'), variables('uniqueSuffix'))]",
@@ -16553,6 +16554,7 @@
       ]
     },
     {
+      "condition": "[and(parameters('enableAzureSearch'), parameters('enableCosmosDb'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2025-04-01",
       "name": "[format('postcaphostra{0}{1}deployment', variables('projectName'), variables('uniqueSuffix'))]",
