@@ -3,6 +3,27 @@
   "handler": "Microsoft.Azure.CreateUIDef",
   "version": "0.1.2-preview",
   "parameters": {
+    "config": {
+      "isWizard": true,
+      "basics": {
+        "description": "Deploy a simple AI agent application with Azure Functions and Azure OpenAI",
+        "location": {
+          "visible": true,
+          "allowedValues": [
+            "eastus",
+            "eastus2",
+            "westus",
+            "westus2",
+            "centralus",
+            "northeurope",
+            "westeurope",
+            "uksouth",
+            "southeastasia",
+            "australiaeast"
+          ]
+        }
+      }
+    },
     "basics": [
       {
         "name": "environmentName",
@@ -15,59 +36,6 @@
           "regex": "^[a-z0-9-]{1,64}$",
           "validationMessage": "Environment name must be 1-64 characters long and contain only lowercase letters, numbers, and hyphens."
         }
-      },
-      {
-        "name": "resourceLocation",
-        "type": "Microsoft.Common.DropDown",
-        "label": "Region",
-        "defaultValue": "East US 2",
-        "toolTip": "Primary location for all resources",
-        "constraints": {
-          "allowedValues": [
-            {
-              "label": "East US",
-              "value": "eastus"
-            },
-            {
-              "label": "East US 2",
-              "value": "eastus2"
-            },
-            {
-              "label": "West US",
-              "value": "westus"
-            },
-            {
-              "label": "West US 2",
-              "value": "westus2"
-            },
-            {
-              "label": "Central US",
-              "value": "centralus"
-            },
-            {
-              "label": "North Europe",
-              "value": "northeurope"
-            },
-            {
-              "label": "West Europe",
-              "value": "westeurope"
-            },
-            {
-              "label": "UK South",
-              "value": "uksouth"
-            },
-            {
-              "label": "Southeast Asia",
-              "value": "southeastasia"
-            },
-            {
-              "label": "Australia East",
-              "value": "australiaeast"
-            }
-          ],
-          "required": true
-        },
-        "visible": true
       }
     ],
     "steps": [
@@ -213,3 +181,6 @@
     }
   }
 }
+    "outputs": {
+      "location": "[location()]",
+      "environmentName": "[basics('environmentName')]",
