@@ -188,7 +188,7 @@ module storage 'br/public:avm/res/storage/storage-account:0.8.3' = {
 
 // Dependent resources for the Azure AI workspace
 module aiDependencies './agent/standard-dependent-resources.bicep' = {
-  name: 'dependencies${projectName}${uniqueSuffix}deployment'
+  name: 'deps${projectName}'
   scope: rg
   params: {
     location: location
@@ -217,7 +217,7 @@ module aiDependencies './agent/standard-dependent-resources.bicep' = {
 }
 
 module aiProject './agent/standard-ai-project.bicep' = {
-  name: '${projectName}deployment'
+  name: 'proj${projectName}'
   scope: rg
   params: {
     // workspace organization
@@ -277,7 +277,7 @@ module api './app/api.bicep' = {
 }
 
 module projectRoleAssignments './agent/standard-ai-project-role-assignments.bicep' = {
-  name: 'aiprojectroleassignments${projectName}${uniqueSuffix}deployment'
+  name: 'rbac${projectName}'
   scope: rg
   params: {
     aiProjectPrincipalId: aiProject.outputs.aiProjectPrincipalId
@@ -296,7 +296,7 @@ module projectRoleAssignments './agent/standard-ai-project-role-assignments.bice
 }
 
 module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bicep' = if (enableAzureSearch && enableCosmosDb) {
-  name: 'capabilityhost${projectName}${uniqueSuffix}deployment'
+  name: 'caphost${projectName}'
   scope: rg
   params: {
     aiServicesAccountName: aiDependencies.outputs.aiServicesName
@@ -314,7 +314,7 @@ module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bice
 }
 
 module postCapabilityHostCreationRoleAssignments './agent/post-capability-host-role-assignments.bicep' = if (enableAzureSearch && enableCosmosDb) {
-  name: 'postcaphostra${projectName}${uniqueSuffix}deployment'
+  name: 'postcap${projectName}'
   scope: rg
   params: {
     aiProjectPrincipalId: aiProject.outputs.aiProjectPrincipalId
