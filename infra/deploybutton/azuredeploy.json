@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "15007496749282112815"
+      "templateHash": "10375916446533517761"
     }
   },
   "parameters": {
@@ -65,13 +65,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Id of the user identity to be used for testing and debugging. This is not required in production. Leave empty if not needed."
-      }
-    },
-    "aiProjectName": {
-      "type": "string",
-      "defaultValue": "simple-agent",
-      "metadata": {
-        "description": "Name for the AI project resources."
       }
     },
     "aiProjectFriendlyName": {

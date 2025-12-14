@@ -25,9 +25,6 @@ param storageAccountName string = ''
 @description('Id of the user identity to be used for testing and debugging. This is not required in production. Leave empty if not needed.')
 param principalId string = ''
 
-@description('Name for the AI project resources.')
-param aiProjectName string = 'simple-agent'
-
 @description('Friendly name for your Azure AI resource')
 param aiProjectFriendlyName string = 'Simple AI Agent Project'
 
