@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "16265012995755934636"
+      "templateHash": "5119729179759471496"
     }
   },
   "parameters": {
@@ -19,7 +19,7 @@
     },
     "location": {
       "type": "string",
-      "defaultValue": "eastus",
+      "defaultValue": "[deployment().location]",
       "metadata": {
         "azd": {
           "type": "location"
