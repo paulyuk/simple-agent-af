@@ -88,7 +88,7 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = 
 }
 resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview'= if(!aiServiceExists){
   parent: aiServices
-  name: modelName
+  name: '${modelName}-${modelVersion}'
   sku : {
     capacity: modelCapacity
     name: modelSkuName
