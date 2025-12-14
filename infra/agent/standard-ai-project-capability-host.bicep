@@ -29,14 +29,12 @@ resource accountCapabilityHost 'Microsoft.CognitiveServices/accounts/capabilityH
 resource projectCapabilityHost 'Microsoft.CognitiveServices/accounts/projects/capabilityHosts@2025-04-01-preview' = {
   name: projectCapHost
   parent: project
-  properties: union(
-    {
-      capabilityHostKind: 'Agents'
-      storageConnections: ['${azureStorageConnection}']
-    },
-    enableAzureSearch ? { vectorStoreConnections: ['${aiSearchConnection}'] } : {},
-    enableCosmosDb ? { threadStorageConnections: ['${cosmosDbConnection}'] } : {}
-  )
+  properties: {
+    capabilityHostKind: 'Agents'
+    storageConnections: ['${azureStorageConnection}']
+    vectorStoreConnections: enableAzureSearch ? ['${aiSearchConnection}'] : ['${azureStorageConnection}']
+    threadStorageConnections: enableCosmosDb ? ['${cosmosDbConnection}'] : ['${azureStorageConnection}']
+  }
   dependsOn: [
     accountCapabilityHost
   ]

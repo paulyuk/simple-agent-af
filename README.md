@@ -46,7 +46,7 @@ For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 Set the following environment variables:
 
 - `AZURE_OPENAI_ENDPOINT`: Your Azure OpenAI service endpoint
-- `AZURE_OPENAI_DEPLOYMENT_NAME`: Your deployment name (optional, defaults to "gpt-4.1-mini")
+- `AZURE_OPENAI_DEPLOYMENT_NAME`: Your deployment name (optional, defaults to `chat` assuming a model deployment of gpt-4.1-mini or similar)
 
 ## Dependencies
 
