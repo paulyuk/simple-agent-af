@@ -7,34 +7,12 @@ param environmentName string
 
 @minLength(1)
 @description('Primary location for all resources & Flex Consumption Function App')
-@allowed([
-  'australiaeast'
-  'brazilsouth'
-  'canadacentral'
-  'eastus'
-  'eastus2'
-  'francecentral'
-  'germanywestcentral'
-  'japaneast'
-  'koreacentral'
-  'northcentralus'
-  'norwayeast'
-  'southafricanorth'
-  'southcentralus'
-  'southindia'
-  'swedencentral'
-  'uaenorth'
-  'uksouth'
-  'westeurope'
-  'westus'
-  'westus3'
-])
 @metadata({
   azd: {
     type: 'location'
   }
 })
-param location string
+param location string = 'eastus'
 
 param vnetEnabled bool = false
 param apiServiceName string = ''
