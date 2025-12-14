@@ -59,13 +59,16 @@ param modelName string = 'gpt-4.1-mini'
 param modelFormat string = 'OpenAI'
 
 @description('Model version for deployment')
-param modelVersion string = '2025-04-14'
+param modelVersion string = '2024-07-18'
 
 @description('Model deployment SKU name')
 param modelSkuName string = 'GlobalStandard'
 
 @description('Model deployment capacity')
 param modelCapacity int = 50
+
+@description('Name for the model deployment in Azure AI Services')
+param modelDeploymentName string = 'chat'
 
 @description('Name of the Cosmos DB account for agent thread storage')
 param cosmosDbName string = 'agent-ai-cosmos'
@@ -202,7 +205,8 @@ module aiDependencies './agent/standard-dependent-resources.bicep' = {
      modelFormat: modelFormat
      modelVersion: modelVersion
      modelSkuName: modelSkuName
-     modelCapacity: modelCapacity  
+     modelCapacity: modelCapacity
+     modelDeploymentName: modelDeploymentName
      modelLocation: location
 
      aiServiceAccountResourceId: aiServiceAccountResourceId
@@ -259,9 +263,9 @@ module api './app/api.bicep' = {
     identityClientId: apiUserAssignedIdentity.outputs.clientId
     appSettings: {
       PROJECT_ENDPOINT: aiProject.outputs.projectEndpoint
-      MODEL_DEPLOYMENT_NAME: '${modelName}-${modelVersion}'
+      MODEL_DEPLOYMENT_NAME: modelDeploymentName
       AZURE_OPENAI_ENDPOINT: 'https://${aiDependencies.outputs.aiServicesName}.openai.azure.com/'
-      AZURE_OPENAI_DEPLOYMENT_NAME: '${modelName}-${modelVersion}'
+      AZURE_OPENAI_DEPLOYMENT_NAME: modelDeploymentName
       AZURE_CLIENT_ID: apiUserAssignedIdentity.outputs.clientId
       STORAGE_CONNECTION__queueServiceUri: 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'
       STORAGE_CONNECTION__clientId: apiUserAssignedIdentity.outputs.clientId
@@ -386,8 +390,8 @@ output AI_SERVICES_NAME string = aiDependencies.outputs.aiServicesName
 
 // AI Foundry outputs
 output PROJECT_ENDPOINT string = aiProject.outputs.projectEndpoint
-output MODEL_DEPLOYMENT_NAME string = '${modelName}-${modelVersion}'
+output MODEL_DEPLOYMENT_NAME string = modelDeploymentName
 output AZURE_OPENAI_ENDPOINT string = 'https://${aiDependencies.outputs.aiServicesName}.openai.azure.com/'
-output AZURE_OPENAI_DEPLOYMENT_NAME string = '${modelName}-${modelVersion}'
+output AZURE_OPENAI_DEPLOYMENT_NAME string = modelDeploymentName
 output AZURE_CLIENT_ID string = apiUserAssignedIdentity.outputs.clientId
 output STORAGE_CONNECTION__queueServiceUri string = 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'

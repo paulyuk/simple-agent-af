@@ -39,6 +39,9 @@ param modelSkuName string
 @description('Model deployment capacity')
 param modelCapacity int 
 
+@description('Name for the model deployment in Azure AI Services')
+param modelDeploymentName string = 'chat'
+
 @description('Model/AI Resource deployment location')
 param modelLocation string 
 
@@ -88,7 +91,7 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = 
 }
 resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-04-01-preview'= if(!aiServiceExists){
   parent: aiServices
-  name: '${modelName}-${modelVersion}'
+  name: modelDeploymentName
   sku : {
     capacity: modelCapacity
     name: modelSkuName
