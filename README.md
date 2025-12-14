@@ -82,24 +82,32 @@ az login
 
 ## MCP (Model Context Protocol) Server Integration
 
-This application includes an example of connecting to a remote MCP server to enable additional tools and capabilities for the agent. The example uses the GitHub MCP server hosted at `https://api.githubcopilot.com/mcp/`.
+This application includes examples of connecting to remote MCP servers to enable additional tools and capabilities for the agent. The examples demonstrate both standard HTTP and OAuth-authenticated connections.
 
 ### Features
 
-- **Remote MCP Server**: Connects to hosted MCP servers via HTTP/HTTPS
+- **Remote MCP Servers**: Connects to hosted MCP servers via HTTP/HTTPS
 - **OAuth Support**: Automatically handles OAuth authentication when using `api.githubcopilot.com`
 - **Tool Management**: Control which tools are available and approval requirements
 - **Flexible Configuration**: Can be customized for different MCP servers
 
-### Configuration Example
+### Configuration Examples
 
-The code demonstrates how to configure a remote MCP server:
+The code demonstrates how to configure multiple remote MCP servers:
 
 ```csharp
 var mcpTools = new List<AITool>
 {
+    // Example 1: Microsoft Learn MCP server (HTTP)
+    new HostedMcpServerTool("microsoft-learn", new Uri("https://learn.microsoft.com/mcp/"))
+    {
+        ApprovalMode = HostedMcpServerToolApprovalMode.NeverRequire
+    },
+    
+    // Example 2: GitHub MCP server (HTTP with OAuth)
     new HostedMcpServerTool("github", new Uri("https://api.githubcopilot.com/mcp/"))
     {
+        // OAuth is handled automatically by the service when using api.githubcopilot.com
         ApprovalMode = HostedMcpServerToolApprovalMode.NeverRequire
     }
 };

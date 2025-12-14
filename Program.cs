@@ -22,10 +22,17 @@ var openAIClient = new AzureOpenAIClient(
     new Uri(endpoint),
     tokenCredential);
 
-// Configure MCP tools from remote GitHub MCP server with OAuth support
+// Configure MCP tools from remote MCP servers
 #pragma warning disable MEAI001 // Type is for evaluation purposes only
 var mcpTools = new List<AITool>
 {
+    // Example 1: Microsoft Learn MCP server (HTTP)
+    new HostedMcpServerTool("microsoft-learn", new Uri("https://learn.microsoft.com/mcp/"))
+    {
+        ApprovalMode = HostedMcpServerToolApprovalMode.NeverRequire
+    },
+    
+    // Example 2: GitHub MCP server (HTTP with OAuth)
     new HostedMcpServerTool("github", new Uri("https://api.githubcopilot.com/mcp/"))
     {
         // OAuth is handled automatically by the service when using api.githubcopilot.com
