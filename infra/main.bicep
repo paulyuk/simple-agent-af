@@ -90,10 +90,10 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 var tags = { 'azd-env-name': environmentName }
 var functionAppName = !empty(apiServiceName) ? apiServiceName : '${abbrs.webSitesFunctions}api-${resourceToken}'
 var deploymentStorageContainerName = 'app-package-${take(functionAppName, 32)}-${take(toLower(uniqueString(functionAppName, resourceToken)), 7)}'
-var projectName = toLower('${aiProjectName}')
 
 // Create a short, unique suffix, that will be unique to each resource group
 var uniqueSuffix = toLower(uniqueString(subscription().id, environmentName, location))
+var projectName = toLower('${environmentName}${uniqueSuffix}')
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -217,12 +217,12 @@ module aiDependencies './agent/standard-dependent-resources.bicep' = {
 }
 
 module aiProject './agent/standard-ai-project.bicep' = {
-  name: '${projectName}${uniqueSuffix}deployment'
+  name: '${projectName}deployment'
   scope: rg
   params: {
     // workspace organization
     aiServicesAccountName: aiDependencies.outputs.aiServicesName
-    aiProjectName: '${projectName}${uniqueSuffix}'
+    aiProjectName: projectName
     aiProjectFriendlyName: aiProjectFriendlyName
     aiProjectDescription: aiProjectDescription
     location: location
