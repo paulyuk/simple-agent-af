@@ -15,93 +15,26 @@
           "regex": "^[a-z0-9-]{1,64}$",
           "validationMessage": "Environment name must be 1-64 characters long and contain only lowercase letters, numbers, and hyphens."
         }
-      }
-    ],
-    "steps": [
-      {
-        "name": "aiConfig",
-        "label": "AI Configuration",
-        "elements": [
-          {
-            "name": "aiProjectFriendlyName",
-            "type": "Microsoft.Common.TextBox",
-            "label": "AI Project Friendly Name",
-            "defaultValue": "Simple AI Agent Project",
-            "toolTip": "Friendly name for your Azure AI resource"
-          },
-          {
-            "name": "aiProjectDescription",
-            "type": "Microsoft.Common.TextBox",
-            "label": "AI Project Description",
-            "defaultValue": "This is a simple AI agent project for Azure Functions.",
-            "toolTip": "Description of your Azure AI resource displayed in AI studio",
-            "multiLine": true
-          },
-          {
-            "name": "modelName",
-            "type": "Microsoft.Common.TextBox",
-            "label": "Model Name",
-            "defaultValue": "gpt-4.1-mini",
-            "toolTip": "Name of the OpenAI model to deploy"
-          },
-          {
-            "name": "modelDeploymentName",
-            "type": "Microsoft.Common.TextBox",
-            "label": "Model Deployment Name",
-            "defaultValue": "chat",
-            "toolTip": "Name for the model deployment in Azure AI Services"
-          },
-          {
-            "name": "enableAzureSearch",
-            "type": "Microsoft.Common.CheckBox",
-            "label": "Enable Azure AI Search for vector store capabilities"
-          },
-          {
-            "name": "enableCosmosDb",
-            "type": "Microsoft.Common.CheckBox",
-            "label": "Enable Cosmos DB for agent thread storage"
-          }
-        ]
       },
       {
-        "name": "accessConfig",
-        "label": "Development Access",
-        "elements": [
-          {
-            "name": "accessInfo",
-            "type": "Microsoft.Common.InfoBox",
-            "visible": true,
-            "options": {
-              "icon": "Info",
-              "text": "For local development, you can optionally provide your Azure AD Object ID to grant access. Leave empty for production deployments."
-            }
-          },
-          {
-            "name": "principalId",
-            "type": "Microsoft.Common.TextBox",
-            "label": "Azure AD Object ID (Optional)",
-            "defaultValue": "",
-            "toolTip": "Your Object ID for development access. Get it via: az ad signed-in-user show --query id -o tsv",
-            "placeholder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "constraints": {
-              "required": false,
-              "regex": "^$|^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
-              "validationMessage": "Must be empty or a valid GUID (e.g., xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)"
-            }
-          }
-        ]
+        "name": "principalId",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Azure AD Object ID (Optional - for development only)",
+        "defaultValue": "",
+        "toolTip": "Your Azure AD Object ID for local development access. Get it via: az ad signed-in-user show --query id -o tsv. Leave empty for production.",
+        "placeholder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "constraints": {
+          "required": false,
+          "regex": "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          "validationMessage": "Must be empty or a valid GUID"
+        }
       }
     ],
+    "steps": [],
     "outputs": {
       "location": "[location()]",
       "environmentName": "[basics('environmentName')]",
-      "principalId": "[steps('accessConfig').principalId]",
-      "aiProjectFriendlyName": "[steps('aiConfig').aiProjectFriendlyName]",
-      "aiProjectDescription": "[steps('aiConfig').aiProjectDescription]",
-      "modelName": "[steps('aiConfig').modelName]",
-      "modelDeploymentName": "[steps('aiConfig').modelDeploymentName]",
-      "enableAzureSearch": "[steps('aiConfig').enableAzureSearch]",
-      "enableCosmosDb": "[steps('aiConfig').enableCosmosDb]"
+      "principalId": "[basics('principalId')]"
     }
   }
 }
