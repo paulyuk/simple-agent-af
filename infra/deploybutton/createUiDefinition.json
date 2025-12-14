@@ -3,27 +3,6 @@
   "handler": "Microsoft.Azure.CreateUIDef",
   "version": "0.1.2-preview",
   "parameters": {
-    "config": {
-      "isWizard": true,
-      "basics": {
-        "description": "Deploy a simple AI agent application with Azure Functions and Azure OpenAI",
-        "location": {
-          "visible": true,
-          "allowedValues": [
-            "eastus",
-            "eastus2",
-            "westus",
-            "westus2",
-            "centralus",
-            "northeurope",
-            "westeurope",
-            "uksouth",
-            "southeastasia",
-            "australiaeast"
-          ]
-        }
-      }
-    },
     "basics": [
       {
         "name": "environmentName",
@@ -44,72 +23,49 @@
         "label": "AI Configuration",
         "elements": [
           {
-            "name": "aiProjectInfo",
-            "type": "Microsoft.Common.Section",
-            "label": "AI Project Settings",
-            "elements": [
-              {
-                "name": "aiProjectFriendlyName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "AI Project Friendly Name",
-                "defaultValue": "Simple AI Agent Project",
-                "toolTip": "Friendly name for your Azure AI resource"
-              },
-              {
-                "name": "aiProjectDescription",
-                "type": "Microsoft.Common.TextBox",
-                "label": "AI Project Description",
-                "defaultValue": "This is a simple AI agent project for Azure Functions.",
-                "toolTip": "Description of your Azure AI resource displayed in AI studio",
-                "multiLine": true
-              }
-            ]
+            "name": "aiProjectFriendlyName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "AI Project Friendly Name",
+            "defaultValue": "Simple AI Agent Project",
+            "toolTip": "Friendly name for your Azure AI resource"
           },
           {
-            "name": "modelConfig",
-            "type": "Microsoft.Common.Section",
-            "label": "Model Configuration",
-            "elements": [
-              {
-                "name": "modelName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Model Name",
-                "defaultValue": "gpt-4.1-mini",
-                "toolTip": "Name of the OpenAI model to deploy"
-              },
-              {
-                "name": "modelDeploymentName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Model Deployment Name",
-                "defaultValue": "chat",
-                "toolTip": "Name for the model deployment in Azure AI Services"
-              }
-            ]
+            "name": "aiProjectDescription",
+            "type": "Microsoft.Common.TextBox",
+            "label": "AI Project Description",
+            "defaultValue": "This is a simple AI agent project for Azure Functions.",
+            "toolTip": "Description of your Azure AI resource displayed in AI studio",
+            "multiLine": true
           },
           {
-            "name": "optionalServices",
-            "type": "Microsoft.Common.Section",
-            "label": "Optional Services",
-            "elements": [
-              {
-                "name": "enableAzureSearch",
-                "type": "Microsoft.Common.CheckBox",
-                "label": "Enable Azure AI Search",
-                "toolTip": "Enable Azure AI Search for vector store and search capabilities"
-              },
-              {
-                "name": "enableCosmosDb",
-                "type": "Microsoft.Common.CheckBox",
-                "label": "Enable Cosmos DB",
-                "toolTip": "Enable Cosmos DB for agent thread storage"
-              }
-            ]
+            "name": "modelName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Model Name",
+            "defaultValue": "gpt-4.1-mini",
+            "toolTip": "Name of the OpenAI model to deploy"
+          },
+          {
+            "name": "modelDeploymentName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Model Deployment Name",
+            "defaultValue": "chat",
+            "toolTip": "Name for the model deployment in Azure AI Services"
+          },
+          {
+            "name": "enableAzureSearch",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Enable Azure AI Search for vector store capabilities"
+          },
+          {
+            "name": "enableCosmosDb",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "Enable Cosmos DB for agent thread storage"
           }
         ]
       },
       {
         "name": "accessConfig",
-        "label": "Access Configuration",
+        "label": "Development Access",
         "elements": [
           {
             "name": "accessInfo",
@@ -117,50 +73,20 @@
             "visible": true,
             "options": {
               "icon": "Info",
-              "text": "For local development and testing, provide your Azure AD Object ID to grant your user account access to Azure resources. This is optional for production deployments where only the managed identity needs access."
-            }
-          },
-          {
-            "name": "configureUserAccess",
-            "type": "Microsoft.Common.OptionsGroup",
-            "label": "Configure user access for development?",
-            "defaultValue": "No (Production)",
-            "toolTip": "Select 'Yes' if you need to access resources locally for development/debugging",
-            "constraints": {
-              "allowedValues": [
-                {
-                  "label": "No (Production)",
-                  "value": "false"
-                },
-                {
-                  "label": "Yes (Development)",
-                  "value": "true"
-                }
-              ],
-              "required": true
-            }
-          },
-          {
-            "name": "principalIdInfo",
-            "type": "Microsoft.Common.InfoBox",
-            "visible": "[equals(steps('accessConfig').configureUserAccess, 'true')]",
-            "options": {
-              "icon": "Info",
-              "text": "To get your Object ID, run: az ad signed-in-user show --query id -o tsv",
-              "uri": "https://learn.microsoft.com/en-us/cli/azure/ad/signed-in-user"
+              "text": "For local development, you can optionally provide your Azure AD Object ID to grant access. Leave empty for production deployments."
             }
           },
           {
             "name": "principalId",
             "type": "Microsoft.Common.TextBox",
-            "label": "Your Azure AD Object ID",
-            "toolTip": "The Object ID of your user account in Azure AD. Required for local development access to Azure resources.",
+            "label": "Azure AD Object ID (Optional)",
+            "defaultValue": "",
+            "toolTip": "Your Object ID for development access. Get it via: az ad signed-in-user show --query id -o tsv",
             "placeholder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "visible": "[equals(steps('accessConfig').configureUserAccess, 'true')]",
             "constraints": {
-              "required": "[equals(steps('accessConfig').configureUserAccess, 'true')]",
-              "regex": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
-              "validationMessage": "Must be a valid GUID (e.g., xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx). Get it by running: az ad signed-in-user show --query id -o tsv"
+              "required": false,
+              "regex": "^$|^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+              "validationMessage": "Must be empty or a valid GUID (e.g., xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)"
             }
           }
         ]
@@ -169,13 +95,13 @@
     "outputs": {
       "location": "[location()]",
       "environmentName": "[basics('environmentName')]",
-      "principalId": "[if(equals(steps('accessConfig').configureUserAccess, 'true'), steps('accessConfig').principalId, '')]",
-      "aiProjectFriendlyName": "[steps('aiConfig').aiProjectInfo.aiProjectFriendlyName]",
-      "aiProjectDescription": "[steps('aiConfig').aiProjectInfo.aiProjectDescription]",
-      "modelName": "[steps('aiConfig').modelConfig.modelName]",
-      "modelDeploymentName": "[steps('aiConfig').modelConfig.modelDeploymentName]",
-      "enableAzureSearch": "[steps('aiConfig').optionalServices.enableAzureSearch]",
-      "enableCosmosDb": "[steps('aiConfig').optionalServices.enableCosmosDb]"
+      "principalId": "[steps('accessConfig').principalId]",
+      "aiProjectFriendlyName": "[steps('aiConfig').aiProjectFriendlyName]",
+      "aiProjectDescription": "[steps('aiConfig').aiProjectDescription]",
+      "modelName": "[steps('aiConfig').modelName]",
+      "modelDeploymentName": "[steps('aiConfig').modelDeploymentName]",
+      "enableAzureSearch": "[steps('aiConfig').enableAzureSearch]",
+      "enableCosmosDb": "[steps('aiConfig').enableCosmosDb]"
     }
   }
 }
