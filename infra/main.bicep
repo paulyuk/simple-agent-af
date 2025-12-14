@@ -12,7 +12,7 @@ param environmentName string
     type: 'location'
   }
 })
-param location string = deployment().location
+param location string = 'eastus2'
 
 param vnetEnabled bool = false
 param apiServiceName string = ''
