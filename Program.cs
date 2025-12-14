@@ -1,6 +1,7 @@
 using Azure.AI.OpenAI;
 using Azure.Identity;
 using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using OpenAI;
 
 var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT is not set.");
@@ -21,21 +22,21 @@ var openAIClient = new AzureOpenAIClient(
     new Uri(endpoint),
     tokenCredential);
 
+// Configure MCP tools from remote GitHub MCP server with OAuth support
+#pragma warning disable MEAI001 // Type is for evaluation purposes only
+var mcpTools = new List<AITool>
+{
+    new HostedMcpServerTool("github", new Uri("https://api.githubcopilot.com/mcp/"))
+    {
+        // OAuth is handled automatically by the service when using api.githubcopilot.com
+        ApprovalMode = HostedMcpServerToolApprovalMode.NeverRequire
+    }
+};
+#pragma warning restore MEAI001
+
 AIAgent agent = openAIClient
     .GetChatClient(deploymentName)
-    .CreateAIAgent(instructions);
-
-// Optional: Add MCP tool from remote URL
-// agent.AddMcpServer("https://example.com/mcp-server");
-
-// Optional: Add MCP tool with authentication
-// agent.AddMcpServer("https://example.com/mcp-server", new HttpClient
-// {
-//     DefaultRequestHeaders = 
-//     {
-//         { "Authorization", "Bearer YOUR_TOKEN_HERE" }
-//     }
-// });
+    .CreateAIAgent(instructions, tools: mcpTools);
 
 // Stay in a loop for continuous conversation
 while (true)
