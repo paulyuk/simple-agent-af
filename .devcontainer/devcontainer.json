@@ -1,0 +1,38 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+	"name": "Simple Agent AF - .NET, aarch64 ready",
+	"dockerFile": "Dockerfile",
+	"features": {
+		"azure-cli": "latest"
+	},
+	"forwardPorts": [7071],
+	"portsAttributes": {
+		"7071": {
+			"label": "Azure Functions",
+			"onAutoForward": "notify"
+		}
+	},
+	"postCreateCommand": "bash -c 'echo \"export PROMPT_DIRTRIM=1\" >> ~/.bashrc || true; mkdir -p ~/.azurite || true; cat .devcontainer/first-run-notice.txt || echo \"Setup completed\"'",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.csdevkit",
+				"ms-dotnettools.csharp",
+				"ms-dotnettools.vscode-dotnet-runtime",
+				"ms-azuretools.vscode-bicep",
+				"ms-azuretools.vscode-docker",
+				"ms-azuretools.vscode-azurefunctions",
+				"GitHub.copilot",
+				"humao.rest-client"
+			],
+			"settings": {
+				"dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+				"dotnet.symbolSearch.searchReferenceAssemblies": true,
+				"azureFunctions.showProjectWarning": false
+			}
+		}
+	},
+	"remoteUser": "vscode",
+	"shutdownAction": "stopContainer"
+}

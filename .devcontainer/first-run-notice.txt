@@ -1,0 +1,16 @@
+👋 Welcome to the Simple Agent AF Codespace!
+
+This environment includes everything needed to run the .NET AI Agent application.
+
+To run the application:
+```
+dotnet run
+```
+
+📚 Setup complete. Agent Framework docs can be found at:
+https://learn.microsoft.com/en-us/agent-framework/
+
+Start Azurite locally for Azure Storage emulation:
+```
+npx azurite --location ~/.azurite
+```
