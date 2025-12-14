@@ -95,15 +95,13 @@
                 "name": "enableAzureSearch",
                 "type": "Microsoft.Common.CheckBox",
                 "label": "Enable Azure AI Search",
-                "toolTip": "Enable Azure AI Search for vector store and search capabilities",
-                "defaultValue": false
+                "toolTip": "Enable Azure AI Search for vector store and search capabilities"
               },
               {
                 "name": "enableCosmosDb",
                 "type": "Microsoft.Common.CheckBox",
                 "label": "Enable Cosmos DB",
-                "toolTip": "Enable Cosmos DB for agent thread storage",
-                "defaultValue": false
+                "toolTip": "Enable Cosmos DB for agent thread storage"
               }
             ]
           }
@@ -169,7 +167,7 @@
       }
     ],
     "outputs": {
-      "location": "[basics('resourceLocation')]",
+      "location": "[location()]",
       "environmentName": "[basics('environmentName')]",
       "principalId": "[if(equals(steps('accessConfig').configureUserAccess, 'true'), steps('accessConfig').principalId, '')]",
       "aiProjectFriendlyName": "[steps('aiConfig').aiProjectInfo.aiProjectFriendlyName]",
@@ -181,6 +179,3 @@
     }
   }
 }
-    "outputs": {
-      "location": "[location()]",
-      "environmentName": "[basics('environmentName')]",
