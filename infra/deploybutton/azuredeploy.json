@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "14403130630947036532"
+      "templateHash": "16722478224795295891"
     }
   },
   "parameters": {
@@ -16490,7 +16490,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.39.26.7824",
-              "templateHash": "8538709456575493664"
+              "templateHash": "2768605354121564364"
             }
           },
           "parameters": {
@@ -16524,13 +16524,6 @@
               "defaultValue": false
             }
           },
-          "variables": {
-            "threadConnections": "[if(parameters('enableCosmosDb'), createArray(format('{0}', parameters('cosmosDbConnection'))), createArray())]",
-            "storageConnections": [
-              "[format('{0}', parameters('azureStorageConnection'))]"
-            ],
-            "vectorStoreConnections": "[if(parameters('enableAzureSearch'), createArray(format('{0}', parameters('aiSearchConnection'))), createArray())]"
-          },
           "resources": [
             {
               "type": "Microsoft.CognitiveServices/accounts/capabilityHosts",
@@ -16544,12 +16537,7 @@
               "type": "Microsoft.CognitiveServices/accounts/projects/capabilityHosts",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}/{2}', parameters('aiServicesAccountName'), parameters('projectName'), parameters('projectCapHost'))]",
-              "properties": {
-                "capabilityHostKind": "Agents",
-                "vectorStoreConnections": "[variables('vectorStoreConnections')]",
-                "storageConnections": "[variables('storageConnections')]",
-                "threadStorageConnections": "[variables('threadConnections')]"
-              },
+              "properties": "[union(createObject('capabilityHostKind', 'Agents', 'storageConnections', createArray(format('{0}', parameters('azureStorageConnection')))), if(parameters('enableAzureSearch'), createObject('vectorStoreConnections', createArray(format('{0}', parameters('aiSearchConnection')))), createObject()), if(parameters('enableCosmosDb'), createObject('threadStorageConnections', createArray(format('{0}', parameters('cosmosDbConnection')))), createObject()))]",
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts/capabilityHosts', parameters('aiServicesAccountName'), parameters('accountCapHost'))]"
               ]

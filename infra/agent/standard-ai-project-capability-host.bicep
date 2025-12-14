@@ -9,11 +9,6 @@ param accountCapHost string
 param enableAzureSearch bool = false
 param enableCosmosDb bool = false
 
-var threadConnections = enableCosmosDb ? ['${cosmosDbConnection}'] : []
-var storageConnections = ['${azureStorageConnection}']
-var vectorStoreConnections = enableAzureSearch ? ['${aiSearchConnection}'] : []
-
-
 resource account 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' existing = {
    name: aiServicesAccountName
 }
@@ -34,12 +29,14 @@ resource accountCapabilityHost 'Microsoft.CognitiveServices/accounts/capabilityH
 resource projectCapabilityHost 'Microsoft.CognitiveServices/accounts/projects/capabilityHosts@2025-04-01-preview' = {
   name: projectCapHost
   parent: project
-  properties: {
-    capabilityHostKind: 'Agents'
-    vectorStoreConnections: vectorStoreConnections
-    storageConnections: storageConnections
-    threadStorageConnections: threadConnections
-  }
+  properties: union(
+    {
+      capabilityHostKind: 'Agents'
+      storageConnections: ['${azureStorageConnection}']
+    },
+    enableAzureSearch ? { vectorStoreConnections: ['${aiSearchConnection}'] } : {},
+    enableCosmosDb ? { threadStorageConnections: ['${cosmosDbConnection}'] } : {}
+  )
   dependsOn: [
     accountCapabilityHost
   ]
