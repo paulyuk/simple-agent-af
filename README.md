@@ -4,7 +4,7 @@ A simple AI agent application using Azure OpenAI with the Azure.AI.OpenAI SDK an
 
 ## Description
 
-This application demonstrates how to create a simple AI agent using the Azure OpenAI SDK configured for Azure OpenAI endpoints. The agent is configured with robot directives and provides an interactive conversational loop.
+This application demonstrates how to create a simple AI agent using the Azure OpenAI SDK configured for Azure OpenAI endpoints. The agent is configured with robot directives and provides an interactive conversational loop. It also includes an example of connecting to a remote MCP (Model Context Protocol) server to enable additional tools and capabilities.
 
 <img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/b379cb39-ba54-4b76-9b5d-1847f5da1e77" />
 
@@ -53,6 +53,7 @@ Set the following environment variables:
 - Azure.AI.OpenAI (2.1.0) - Azure OpenAI SDK
 - Azure.Identity (1.17.0)  
 - Microsoft.Agents.AI.OpenAI (1.0.0-preview.251204.1)
+- Microsoft.Extensions.AI (10.0.1) - For MCP server support
 
 **Note**: This project uses the Azure.AI.OpenAI SDK (which is built on the official OpenAI SDK) to connect to Azure OpenAI endpoints.
 
@@ -78,6 +79,47 @@ The application uses `DefaultAzureCredential` for authentication. Make sure you'
 ```bash
 az login
 ```
+
+## MCP (Model Context Protocol) Server Integration
+
+This application includes an example of connecting to a remote MCP server to enable additional tools and capabilities for the agent. The example uses the GitHub MCP server hosted at `https://api.githubcopilot.com/mcp/`.
+
+### Features
+
+- **Remote MCP Server**: Connects to hosted MCP servers via HTTP/HTTPS
+- **OAuth Support**: Automatically handles OAuth authentication when using `api.githubcopilot.com`
+- **Tool Management**: Control which tools are available and approval requirements
+- **Flexible Configuration**: Can be customized for different MCP servers
+
+### Configuration Example
+
+The code demonstrates how to configure a remote MCP server:
+
+```csharp
+var mcpTools = new List<AITool>
+{
+    new HostedMcpServerTool("github", new Uri("https://api.githubcopilot.com/mcp/"))
+    {
+        ApprovalMode = HostedMcpServerToolApprovalMode.NeverRequire
+    }
+};
+
+AIAgent agent = openAIClient
+    .GetChatClient(deploymentName)
+    .CreateAIAgent(instructions, tools: mcpTools);
+```
+
+### Customization Options
+
+- **Server Address**: Change the URI to connect to different MCP servers
+- **Approval Mode**: Control when user approval is required for tool calls
+  - `NeverRequire`: Tools execute without approval
+  - `AlwaysRequire`: All tools require approval
+  - `RequireSpecific()`: Specify approval per tool
+- **Allowed Tools**: Restrict which tools the agent can use
+- **Authorization Token**: Add custom authorization if needed
+
+For more information about MCP in Agent Framework, see the [MCP documentation](https://learn.microsoft.com/en-us/agent-framework/user-guide/model-context-protocol/using-mcp-tools).
 
 ## Learn More
 
