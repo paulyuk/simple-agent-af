@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "14655735582848332271"
+      "templateHash": "16146481024726482833"
     }
   },
   "parameters": {
@@ -64,7 +64,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Id of the user identity to be used for testing and debugging. This is not required in production. Leave empty if not needed."
+        "description": "Optional: Your Azure AD user/service principal object ID for development access. Leave empty for production. Local development should use \"azd up\" which sets this automatically."
       }
     },
     "aiProjectFriendlyName": {

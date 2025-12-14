@@ -22,7 +22,7 @@ param appServicePlanName string = ''
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param storageAccountName string = ''
-@description('Id of the user identity to be used for testing and debugging. This is not required in production. Leave empty if not needed.')
+@description('Optional: Your Azure AD user/service principal object ID for development access. Leave empty for production. Local development should use "azd up" which sets this automatically.')
 param principalId string = ''
 
 @description('Friendly name for your Azure AI resource')

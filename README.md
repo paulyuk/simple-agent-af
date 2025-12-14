@@ -12,13 +12,17 @@ This application demonstrates how to create a simple AI agent using the Azure Op
 
 ### Quick Start Options
 
-1. **One-Click Deploy**: [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
+1. **One-Click Deploy**: [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2FcreateUiDefinition.json)
+   - The deployment wizard will guide you through the configuration
+   - For development: Optionally provide your Azure AD Object ID for local testing access (get it via: `az ad signed-in-user show --query id -o tsv`)
+   - For production: Leave the Object ID empty - the managed identity will handle all access
    
-2. **Azure Developer CLI** (Recommended):
+2. **Azure Developer CLI** (Recommended for development):
    ```bash
    azd auth login
    azd up
    ```
+   - Automatically configures your user access for local development
 
 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 

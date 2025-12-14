@@ -1,0 +1,215 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "environmentName",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Environment Name",
+        "defaultValue": "simple-agent",
+        "toolTip": "Name of the environment which is used to generate a short unique hash used in all resources.",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-z0-9-]{1,64}$",
+          "validationMessage": "Environment name must be 1-64 characters long and contain only lowercase letters, numbers, and hyphens."
+        }
+      },
+      {
+        "name": "resourceLocation",
+        "type": "Microsoft.Common.DropDown",
+        "label": "Region",
+        "defaultValue": "East US 2",
+        "toolTip": "Primary location for all resources",
+        "constraints": {
+          "allowedValues": [
+            {
+              "label": "East US",
+              "value": "eastus"
+            },
+            {
+              "label": "East US 2",
+              "value": "eastus2"
+            },
+            {
+              "label": "West US",
+              "value": "westus"
+            },
+            {
+              "label": "West US 2",
+              "value": "westus2"
+            },
+            {
+              "label": "Central US",
+              "value": "centralus"
+            },
+            {
+              "label": "North Europe",
+              "value": "northeurope"
+            },
+            {
+              "label": "West Europe",
+              "value": "westeurope"
+            },
+            {
+              "label": "UK South",
+              "value": "uksouth"
+            },
+            {
+              "label": "Southeast Asia",
+              "value": "southeastasia"
+            },
+            {
+              "label": "Australia East",
+              "value": "australiaeast"
+            }
+          ],
+          "required": true
+        },
+        "visible": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "aiConfig",
+        "label": "AI Configuration",
+        "elements": [
+          {
+            "name": "aiProjectInfo",
+            "type": "Microsoft.Common.Section",
+            "label": "AI Project Settings",
+            "elements": [
+              {
+                "name": "aiProjectFriendlyName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "AI Project Friendly Name",
+                "defaultValue": "Simple AI Agent Project",
+                "toolTip": "Friendly name for your Azure AI resource"
+              },
+              {
+                "name": "aiProjectDescription",
+                "type": "Microsoft.Common.TextBox",
+                "label": "AI Project Description",
+                "defaultValue": "This is a simple AI agent project for Azure Functions.",
+                "toolTip": "Description of your Azure AI resource displayed in AI studio",
+                "multiLine": true
+              }
+            ]
+          },
+          {
+            "name": "modelConfig",
+            "type": "Microsoft.Common.Section",
+            "label": "Model Configuration",
+            "elements": [
+              {
+                "name": "modelName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Model Name",
+                "defaultValue": "gpt-4.1-mini",
+                "toolTip": "Name of the OpenAI model to deploy"
+              },
+              {
+                "name": "modelDeploymentName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Model Deployment Name",
+                "defaultValue": "chat",
+                "toolTip": "Name for the model deployment in Azure AI Services"
+              }
+            ]
+          },
+          {
+            "name": "optionalServices",
+            "type": "Microsoft.Common.Section",
+            "label": "Optional Services",
+            "elements": [
+              {
+                "name": "enableAzureSearch",
+                "type": "Microsoft.Common.CheckBox",
+                "label": "Enable Azure AI Search",
+                "toolTip": "Enable Azure AI Search for vector store and search capabilities",
+                "defaultValue": false
+              },
+              {
+                "name": "enableCosmosDb",
+                "type": "Microsoft.Common.CheckBox",
+                "label": "Enable Cosmos DB",
+                "toolTip": "Enable Cosmos DB for agent thread storage",
+                "defaultValue": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "accessConfig",
+        "label": "Access Configuration",
+        "elements": [
+          {
+            "name": "accessInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "For local development and testing, provide your Azure AD Object ID to grant your user account access to Azure resources. This is optional for production deployments where only the managed identity needs access."
+            }
+          },
+          {
+            "name": "configureUserAccess",
+            "type": "Microsoft.Common.OptionsGroup",
+            "label": "Configure user access for development?",
+            "defaultValue": "No (Production)",
+            "toolTip": "Select 'Yes' if you need to access resources locally for development/debugging",
+            "constraints": {
+              "allowedValues": [
+                {
+                  "label": "No (Production)",
+                  "value": "false"
+                },
+                {
+                  "label": "Yes (Development)",
+                  "value": "true"
+                }
+              ],
+              "required": true
+            }
+          },
+          {
+            "name": "principalIdInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": "[equals(steps('accessConfig').configureUserAccess, 'true')]",
+            "options": {
+              "icon": "Info",
+              "text": "To get your Object ID, run: az ad signed-in-user show --query id -o tsv",
+              "uri": "https://learn.microsoft.com/en-us/cli/azure/ad/signed-in-user"
+            }
+          },
+          {
+            "name": "principalId",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Your Azure AD Object ID",
+            "toolTip": "The Object ID of your user account in Azure AD. Required for local development access to Azure resources.",
+            "placeholder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "visible": "[equals(steps('accessConfig').configureUserAccess, 'true')]",
+            "constraints": {
+              "required": "[equals(steps('accessConfig').configureUserAccess, 'true')]",
+              "regex": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
+              "validationMessage": "Must be a valid GUID (e.g., xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx). Get it by running: az ad signed-in-user show --query id -o tsv"
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "location": "[basics('resourceLocation')]",
+      "environmentName": "[basics('environmentName')]",
+      "principalId": "[if(equals(steps('accessConfig').configureUserAccess, 'true'), steps('accessConfig').principalId, '')]",
+      "aiProjectFriendlyName": "[steps('aiConfig').aiProjectInfo.aiProjectFriendlyName]",
+      "aiProjectDescription": "[steps('aiConfig').aiProjectInfo.aiProjectDescription]",
+      "modelName": "[steps('aiConfig').modelConfig.modelName]",
+      "modelDeploymentName": "[steps('aiConfig').modelConfig.modelDeploymentName]",
+      "enableAzureSearch": "[steps('aiConfig').optionalServices.enableAzureSearch]",
+      "enableCosmosDb": "[steps('aiConfig').optionalServices.enableCosmosDb]"
+    }
+  }
+}
