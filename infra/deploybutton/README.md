@@ -12,14 +12,14 @@ When deploying, you will be asked to provide:
 - **location**: The Azure region where resources will be deployed
 
 All other parameters use secure defaults optimized for the Simple Agent Framework:
-- Model: GPT-4.1-mini (2025-04-14)
+- Model: GPT-4o-mini (2024-07-18)
 - Model SKU: GlobalStandard
 - Model Capacity: 50
 
 ## What Gets Deployed
 
 - Azure Functions app (Flex Consumption plan)
-- Azure AI Services with GPT-4.1-mini deployment
+- Azure AI Services with GPT-4o-mini deployment
 - Azure AI Search
 - Cosmos DB (for agent state)
 - Storage Account
