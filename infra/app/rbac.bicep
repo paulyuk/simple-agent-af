@@ -2,7 +2,7 @@ param storageAccountName string
 param appInsightsName string
 param managedIdentityPrincipalId string // Principal ID for the Managed Identity
 param userIdentityPrincipalId string = '' // Principal ID for the User Identity
-param allowUserIdentityPrincipal bool = false // Flag to enable user identity role assignments
+param allowUserIdentityPrincipal bool = true // Flag to enable user identity role assignments
 param enableBlob bool = true
 param enableQueue bool = false
 param enableTable bool = false
