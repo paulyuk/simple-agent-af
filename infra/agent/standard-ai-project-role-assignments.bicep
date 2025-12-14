@@ -1,7 +1,7 @@
 param aiProjectPrincipalId string
 param aiProjectPrincipalType string = 'ServicePrincipal' // Workaround for https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-template#new-service-principal
 param userPrincipalId string = ''
-param allowUserIdentityPrincipal bool = false // Flag to enable user identity role assignments
+param allowUserIdentityPrincipal bool = true // Flag to enable user identity role assignments
 
 param aiServicesName string
 param aiSearchName string
