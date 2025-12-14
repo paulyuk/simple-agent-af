@@ -281,9 +281,9 @@ module api './app/api.bicep' = {
     identityClientId: apiUserAssignedIdentity.outputs.clientId
     appSettings: {
       PROJECT_ENDPOINT: aiProject.outputs.projectEndpoint
-      MODEL_DEPLOYMENT_NAME: modelName
+      MODEL_DEPLOYMENT_NAME: '${modelName}-${modelVersion}'
       AZURE_OPENAI_ENDPOINT: 'https://${aiDependencies.outputs.aiServicesName}.openai.azure.com/'
-      AZURE_OPENAI_DEPLOYMENT_NAME: modelName
+      AZURE_OPENAI_DEPLOYMENT_NAME: '${modelName}-${modelVersion}'
       AZURE_CLIENT_ID: apiUserAssignedIdentity.outputs.clientId
       STORAGE_CONNECTION__queueServiceUri: 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'
       STORAGE_CONNECTION__clientId: apiUserAssignedIdentity.outputs.clientId
@@ -408,8 +408,8 @@ output AI_SERVICES_NAME string = aiDependencies.outputs.aiServicesName
 
 // AI Foundry outputs
 output PROJECT_ENDPOINT string = aiProject.outputs.projectEndpoint
-output MODEL_DEPLOYMENT_NAME string = modelName
+output MODEL_DEPLOYMENT_NAME string = '${modelName}-${modelVersion}'
 output AZURE_OPENAI_ENDPOINT string = 'https://${aiDependencies.outputs.aiServicesName}.openai.azure.com/'
-output AZURE_OPENAI_DEPLOYMENT_NAME string = modelName
+output AZURE_OPENAI_DEPLOYMENT_NAME string = '${modelName}-${modelVersion}'
 output AZURE_CLIENT_ID string = apiUserAssignedIdentity.outputs.clientId
 output STORAGE_CONNECTION__queueServiceUri string = 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'

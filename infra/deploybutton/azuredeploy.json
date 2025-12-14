@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "16310518948387911457"
+      "templateHash": "3971551650634422324"
     }
   },
   "parameters": {
@@ -9872,7 +9872,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.39.26.7824",
-              "templateHash": "5054867356267832526"
+              "templateHash": "2580232026536551671"
             }
           },
           "parameters": {
@@ -10034,7 +10034,7 @@
               "condition": "[not(variables('aiServiceExists'))]",
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2025-04-01-preview",
-              "name": "[format('{0}/{1}', parameters('aiServicesName'), parameters('modelName'))]",
+              "name": "[format('{0}/{1}', parameters('aiServicesName'), format('{0}-{1}', parameters('modelName'), parameters('modelVersion')))]",
               "sku": {
                 "capacity": "[parameters('modelCapacity')]",
                 "name": "[parameters('modelSkuName')]"
@@ -10526,9 +10526,9 @@
           "appSettings": {
             "value": {
               "PROJECT_ENDPOINT": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('{0}{1}', variables('abbrs').resourcesResourceGroups, parameters('environmentName')))), 'Microsoft.Resources/deployments', format('{0}{1}deployment', variables('projectName'), variables('uniqueSuffix'))), '2025-04-01').outputs.projectEndpoint.value]",
-              "MODEL_DEPLOYMENT_NAME": "[parameters('modelName')]",
+              "MODEL_DEPLOYMENT_NAME": "[format('{0}-{1}', parameters('modelName'), parameters('modelVersion'))]",
               "AZURE_OPENAI_ENDPOINT": "[format('https://{0}.openai.azure.com/', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('{0}{1}', variables('abbrs').resourcesResourceGroups, parameters('environmentName')))), 'Microsoft.Resources/deployments', format('dependencies{0}{1}deployment', variables('projectName'), variables('uniqueSuffix'))), '2025-04-01').outputs.aiServicesName.value)]",
-              "AZURE_OPENAI_DEPLOYMENT_NAME": "[parameters('modelName')]",
+              "AZURE_OPENAI_DEPLOYMENT_NAME": "[format('{0}-{1}', parameters('modelName'), parameters('modelVersion'))]",
               "AZURE_CLIENT_ID": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('{0}{1}', variables('abbrs').resourcesResourceGroups, parameters('environmentName')))), 'Microsoft.Resources/deployments', 'apiUserAssignedIdentity'), '2025-04-01').outputs.clientId.value]",
               "STORAGE_CONNECTION__queueServiceUri": "[format('https://{0}.queue.{1}', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('{0}{1}', variables('abbrs').resourcesResourceGroups, parameters('environmentName')))), 'Microsoft.Resources/deployments', 'storage'), '2025-04-01').outputs.name.value, environment().suffixes.storage)]",
               "STORAGE_CONNECTION__clientId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('{0}{1}', variables('abbrs').resourcesResourceGroups, parameters('environmentName')))), 'Microsoft.Resources/deployments', 'apiUserAssignedIdentity'), '2025-04-01').outputs.clientId.value]",
@@ -16928,7 +16928,7 @@
     },
     "MODEL_DEPLOYMENT_NAME": {
       "type": "string",
-      "value": "[parameters('modelName')]"
+      "value": "[format('{0}-{1}', parameters('modelName'), parameters('modelVersion'))]"
     },
     "AZURE_OPENAI_ENDPOINT": {
       "type": "string",
@@ -16936,7 +16936,7 @@
     },
     "AZURE_OPENAI_DEPLOYMENT_NAME": {
       "type": "string",
-      "value": "[parameters('modelName')]"
+      "value": "[format('{0}-{1}', parameters('modelName'), parameters('modelVersion'))]"
     },
     "AZURE_CLIENT_ID": {
       "type": "string",
