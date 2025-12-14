@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.39.26.7824",
-      "templateHash": "477288351220710745"
+      "templateHash": "2674380991839498738"
     }
   },
   "parameters": {
@@ -16490,7 +16490,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.39.26.7824",
-              "templateHash": "4146633942589121184"
+              "templateHash": "2768605354121564364"
             }
           },
           "parameters": {
@@ -16537,14 +16537,7 @@
               "type": "Microsoft.CognitiveServices/accounts/projects/capabilityHosts",
               "apiVersion": "2025-04-01-preview",
               "name": "[format('{0}/{1}/{2}', parameters('aiServicesAccountName'), parameters('projectName'), parameters('projectCapHost'))]",
-              "properties": {
-                "capabilityHostKind": "Agents",
-                "storageConnections": [
-                  "[format('{0}', parameters('azureStorageConnection'))]"
-                ],
-                "vectorStoreConnections": "[if(parameters('enableAzureSearch'), createArray(format('{0}', parameters('aiSearchConnection'))), createArray(format('{0}', parameters('azureStorageConnection'))))]",
-                "threadStorageConnections": "[if(parameters('enableCosmosDb'), createArray(format('{0}', parameters('cosmosDbConnection'))), createArray(format('{0}', parameters('azureStorageConnection'))))]"
-              },
+              "properties": "[union(createObject('capabilityHostKind', 'Agents', 'storageConnections', createArray(format('{0}', parameters('azureStorageConnection')))), if(parameters('enableAzureSearch'), createObject('vectorStoreConnections', createArray(format('{0}', parameters('aiSearchConnection')))), createObject()), if(parameters('enableCosmosDb'), createObject('threadStorageConnections', createArray(format('{0}', parameters('cosmosDbConnection')))), createObject()))]",
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts/capabilityHosts', parameters('aiServicesAccountName'), parameters('accountCapHost'))]"
               ]
