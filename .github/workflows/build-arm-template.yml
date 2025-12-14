@@ -1,0 +1,92 @@
+name: Build ARM Template
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**/*.bicep'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Bicep CLI
+        run: |
+          curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
+          chmod +x ./bicep
+          sudo mv ./bicep /usr/local/bin/bicep
+          bicep --version
+
+      - name: Create deploybutton directory
+        run: mkdir -p infra/deploybutton
+
+      - name: Build ARM template from Bicep
+        run: |
+          cd infra
+          bicep build main.bicep --outfile deploybutton/azuredeploy.json
+
+      - name: Create parameters file for deploy button
+        run: |
+          cat > infra/deploybutton/azuredeploy.parameters.json << 'EOF'
+          {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+              "environmentName": {
+                "value": "simple-agent"
+              },
+              "location": {
+                "value": "eastus"
+              }
+            }
+          }
+          EOF
+
+      - name: Create README for deploy button
+        run: |
+          cat > infra/deploybutton/README.md << 'EOF'
+          # Deploy to Azure Button
+
+          This folder contains the compiled ARM template for one-click deployment to Azure.
+
+          [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
+
+          ## Parameters
+
+          When deploying, you will be asked to provide:
+
+          - **environmentName**: A unique name for your environment (used to generate resource names)
+          - **location**: The Azure region where resources will be deployed
+
+          All other parameters use secure defaults optimized for the Simple Agent Framework:
+          - Model: GPT-4o-mini (2024-07-18)
+          - Model SKU: GlobalStandard
+          - Model Capacity: 50
+
+          ## What Gets Deployed
+
+          - Azure Functions app (Flex Consumption plan)
+          - Azure AI Services with GPT-4o-mini deployment
+          - Azure AI Search
+          - Cosmos DB (for agent state)
+          - Storage Account
+          - Application Insights and Log Analytics
+          - All necessary role assignments and managed identities
+          EOF
+
+      - name: Commit and push ARM template
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add infra/deploybutton/
+          git diff --staged --quiet || git commit -m "Auto-generated ARM template from Bicep"
+          git push
+        continue-on-error: true
