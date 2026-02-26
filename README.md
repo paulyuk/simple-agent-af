@@ -45,7 +45,8 @@ This provisions all resources and configures local development automatically.
 
    ```bash
    # Interactive chat client
-   dotnet run --project chat/Chat.csproj
+   cd chat
+   dotnet run
 
    # Or use curl directly
    curl -X POST http://localhost:7071/api/ask -d "what are the laws"
@@ -54,7 +55,7 @@ This provisions all resources and configures local development automatically.
    Set `AGENT_URL` to point to a deployed instance:
 
    ```bash
-   AGENT_URL=https://<your-function-app>.azurewebsites.net dotnet run --project chat/Chat.csproj
+   AGENT_URL=https://<your-function-app>.azurewebsites.net dotnet run
    ```
 
 ## Source Code
