@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "16556621188888421014"
+      "templateHash": "815657142836954572"
     }
   },
   "parameters": {
@@ -11352,7 +11352,7 @@
             "value": "dotnet-isolated"
           },
           "runtimeVersion": {
-            "value": "8.0"
+            "value": "10.0"
           },
           "storageAccountName": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('{0}{1}', variables('abbrs').resourcesResourceGroups, parameters('environmentName')))), 'Microsoft.Resources/deployments', 'storage'), '2025-04-01').outputs.name.value]"
