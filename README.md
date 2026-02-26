@@ -37,6 +37,7 @@ This provisions all resources and configures local development automatically.
 2. Run the function locally:
 
    ```bash
+   cd agent
    func start
    ```
 
@@ -44,7 +45,7 @@ This provisions all resources and configures local development automatically.
 
    ```bash
    # Interactive chat client
-   dotnet run --project Chat.csproj
+   dotnet run --project chat/Chat.csproj
 
    # Or use curl directly
    curl -X POST http://localhost:7071/api/ask -d "what are the laws"
@@ -53,14 +54,14 @@ This provisions all resources and configures local development automatically.
    Set `AGENT_URL` to point to a deployed instance:
 
    ```bash
-   AGENT_URL=https://<your-function-app>.azurewebsites.net dotnet run --project Chat.csproj
+   AGENT_URL=https://<your-function-app>.azurewebsites.net dotnet run --project chat/Chat.csproj
    ```
 
 ## Source Code
 
-The agent logic is in [`Ask.cs`](Ask.cs). It creates a `CopilotClient`, configures a session with a system message (Asimov's Three Laws of Robotics), and exposes an HTTP endpoint (`/api/ask`) that accepts a prompt and returns the agent's response.
+The agent logic is in [`agent/Ask.cs`](agent/Ask.cs). It creates a `CopilotClient`, configures a session with a system message (Asimov's Three Laws of Robotics), and exposes an HTTP endpoint (`/api/ask`) that accepts a prompt and returns the agent's response.
 
-[`Chat.cs`](Chat.cs) is a lightweight .NET console client that POSTs messages to the function in a loop, giving you an interactive chat experience. It defaults to `http://localhost:7071` but can be pointed at a deployed instance via the `AGENT_URL` environment variable.
+[`chat/Chat.cs`](chat/Chat.cs) is a lightweight .NET console client that POSTs messages to the function in a loop, giving you an interactive chat experience. It defaults to `http://localhost:7071` but can be pointed at a deployed instance via the `AGENT_URL` environment variable.
 
 ## Using Microsoft Foundry (BYOK)
 
