@@ -4,7 +4,7 @@ A simple AI agent built with the GitHub Copilot SDK, running as an Azure Functio
 
 ## Prerequisites
 
-- [.NET 8.0+](https://dotnet.microsoft.com/download)
+- [.NET 10.0+](https://dotnet.microsoft.com/download)
 - [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local#install-the-azure-functions-core-tools)
 - [Azure Developer CLI (azd)](https://aka.ms/azd-install) (only needed for deploying Microsoft Foundry resources)
 - Access to an AI model via one of:
@@ -25,7 +25,7 @@ This provisions all resources and configures local development automatically.
 ### What Gets Deployed
 
 - Microsoft Foundry project with GPT-5-mini model
-- Azure Functions app (.NET 8, Flex Consumption plan)
+- Azure Functions app (.NET 10, Flex Consumption plan)
 - Storage, monitoring, and all necessary RBAC role assignments
 - Optional: Search for vector store (disabled by default)
 - Optional: Cosmos DB for agent thread storage (disabled by default)
