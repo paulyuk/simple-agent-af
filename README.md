@@ -1,85 +1,83 @@
-# Simple Agent Framework Quickstart (.NET 10)
+# Simple Agent QuickStart (.NET Copilot SDK)
 
-A simple AI agent application using Azure OpenAI with the Azure.AI.OpenAI SDK and Microsoft Agent Framework 2.0.
-
-## Description
-
-This application demonstrates how to create a simple AI agent using the Azure OpenAI SDK configured for Azure OpenAI endpoints. The agent is configured with robot directives and provides an interactive conversational loop.
-
-<img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/b379cb39-ba54-4b76-9b5d-1847f5da1e77" />
-
-## Deploy to Azure
-
-### Quick Start Options
-
-1. **One-Click Deploy**: [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
-   
-2. **Azure Developer CLI** (Recommended for development):
-   ```bash
-   azd auth login
-   azd up
-   ```
-   - Automatically configures your user access for local development
-
-For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
-
-### What Gets Deployed
-
-- Azure Functions app with .NET 9 runtime (Flex Consumption plan)
-- Azure AI services with GPT-4.1-mini model
-- Storage, monitoring, and all necessary role assignments
-- Optional: Azure AI Search (for vector store capabilities, disabled by default)
-- Optional: Cosmos DB (for agent thread storage, disabled by default)
+A simple AI agent built with the GitHub Copilot SDK, running as a .NET console app.
 
 ## Prerequisites
 
-### For Azure Deployment
-- [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
-- Azure subscription
+- [.NET 8.0+](https://dotnet.microsoft.com/download)
+- [Azure Developer CLI (azd)](https://aka.ms/azd-install) (only needed for deploying Azure resources)
+- Access to an AI model via one of:
+  - **GitHub Copilot subscription** — models are available automatically
+  - **Bring Your Own Key (BYOK)** — use an API key from [Microsoft Foundry](https://ai.azure.com) (see [BYOK docs](https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md))
 
-### For Local Development
-- .NET 10
-- Azure OpenAI service endpoint and deployment
-- Azure CLI for authentication
+## Deploy Azure AI Resources (if needed)
 
-## Environment Variables
+If you're using BYOK and don't already have a Microsoft Foundry AI project with a model deployed, use one of these options:
 
-Set the following environment variables:
+### Option 1: Azure Developer CLI (Recommended)
 
-- `AZURE_OPENAI_ENDPOINT`: Your Azure OpenAI service endpoint
-- `AZURE_OPENAI_DEPLOYMENT_NAME`: Your deployment name (optional, defaults to `chat` assuming a model deployment of gpt-4.1-mini or similar)
+Provisions all Azure resources and configures local development automatically:
 
-## Dependencies
+```bash
+azd auth login
+azd up
+```
 
-- Azure.AI.OpenAI (2.1.0) - Azure OpenAI SDK
-- Azure.Identity (1.17.0)  
-- Microsoft.Agents.AI.OpenAI (1.0.0-preview.251204.1)
+### Option 2: One-Click Deploy
 
-**Note**: This project uses the Azure.AI.OpenAI SDK (which is built on the official OpenAI SDK) to connect to Azure OpenAI endpoints.
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpaulyuk%2Fsimple-agent-af%2Fmain%2Finfra%2Fdeploybutton%2Fazuredeploy.json)
 
-## Local Development Usage
+> **Important:** Fill in the **Principal ID** field with your user object ID from the [Entra blade](https://ms.portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview) and give the environment a memorable name.
 
-After deploying to Azure or setting up your own Azure OpenAI resources:
+### What Gets Deployed
+
+- Microsoft Foundry AI Project with GPT-5-mini model
+- Storage, monitoring, and all necessary RBAC role assignments
+- Optional: Azure AI Search for vector store (disabled by default)
+- Optional: Cosmos DB for agent thread storage (disabled by default)
+
+## Quickstart
 
 1. Clone the repository
-2. Set the required environment variables (or use `azd env get-values` after deployment)
-3. Run the application:
+
+2. Install dependencies:
+
+   ```bash
+   dotnet restore
+   ```
+
+3. Run the agent:
+
+   ```bash
+   dotnet run
+   ```
+
+4. Enter a message like `what are the laws?` — type `exit` or `quit` to end the session.
+
+## Source Code
+
+The agent logic is in [`Program.cs`](Program.cs). It creates a `CopilotClient`, configures a session with a system message (Asimov's Three Laws of Robotics), and runs an interactive conversation loop where user input is sent to the agent and responses are printed.
+
+## Using Azure Foundry (BYOK)
+
+By default the agent uses GitHub Copilot's models. To use your own model from Microsoft Foundry instead, set these environment variables:
 
 ```bash
-dotnet run
+export AZURE_OPENAI_ENDPOINT="https://<your-ai-services>.openai.azure.com/"
+export AZURE_OPENAI_API_KEY="<your-api-key>"
+export AZURE_OPENAI_MODEL="gpt-5-mini"  # optional, defaults to gpt-5-mini
 ```
-4. Enter a message like `what are the laws?`
 
-The application will start an interactive conversation loop where you can ask questions. Type 'exit' or 'quit' to end the session.
+**Getting these values:**
+- If you ran `azd up`, the endpoint is already in your environment — run `azd env get-values | grep AZURE_OPENAI_ENDPOINT`
+- For the API key, go to [Azure Portal](https://portal.azure.com) → your AI Services resource → **Keys and Endpoint** → select the **Azure OpenAI** tab
+- Or find both in the [Azure AI Foundry portal](https://ai.azure.com) under your project settings
 
-## Authentication
-
-The application uses `DefaultAzureCredential` for authentication. Make sure you're logged in to Azure CLI:
-
-```bash
-az login
-```
+See the [BYOK docs](https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md) for details.
 
 ## Learn More
 
-For more information about building Azure AI Agents using Agent Framework 2.0, see the [official documentation](https://learn.microsoft.com/en-us/agent-framework/).
+- [GitHub Copilot SDK](https://github.com/github/copilot-sdk)
+- [Copilot SDK .NET docs](https://github.com/github/copilot-sdk/tree/main/dotnet)
+- [BYOK (Bring Your Own Key)](https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md)
+- [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/)

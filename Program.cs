@@ -1,10 +1,7 @@
-using Azure.AI.OpenAI;
-using Azure.Identity;
-using Microsoft.Agents.AI;
-using OpenAI;
+using GitHub.Copilot.SDK;
 
-var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT is not set.");
-var deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? "chat";
+var client = new CopilotClient();
+
 var instructions = """
     1. A robot may not injure a human being...
     2. A robot must obey orders given it by human beings...
@@ -13,39 +10,39 @@ var instructions = """
     Objective: Give me the TLDR in exactly 5 words.
     """;
 
-// Get Azure token for authentication
-var tokenCredential = new DefaultAzureCredential();
+SessionConfig SessionConfig()
+{
+    var config = new SessionConfig
+    {
+        SystemMessage = new SystemMessageConfig { Content = instructions }
+    };
+    var baseUrl = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+    var apiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
+    var model = Environment.GetEnvironmentVariable("AZURE_OPENAI_MODEL") ?? "gpt-5-mini";
+    if (!string.IsNullOrEmpty(baseUrl) && !string.IsNullOrEmpty(apiKey))
+    {
+        config.Model = model;
+        config.Provider = new ProviderConfig
+        {
+            Type = "azure",
+            BaseUrl = baseUrl,
+            ApiKey = apiKey
+        };
+    }
+    return config;
+}
 
-// Create OpenAI client configured for Azure endpoint using AzureOpenAI factory
-var openAIClient = new AzureOpenAIClient(
-    new Uri(endpoint),
-    tokenCredential);
+Console.WriteLine("=== Simple Copilot SDK Agent ===\n");
 
-AIAgent agent = openAIClient
-    .GetChatClient(deploymentName)
-    .CreateAIAgent(instructions);
+await using var session = await client.CreateSessionAsync(SessionConfig());
 
-// Optional: Add MCP tool from remote URL
-// agent.AddMcpServer("https://example.com/mcp-server");
-
-// Optional: Add MCP tool with authentication
-// agent.AddMcpServer("https://example.com/mcp-server", new HttpClient
-// {
-//     DefaultRequestHeaders = 
-//     {
-//         { "Authorization", "Bearer YOUR_TOKEN_HERE" }
-//     }
-// });
-
-// Stay in a loop for continuous conversation
 while (true)
 {
     Console.Write("Enter your message: ");
     var userMessage = Console.ReadLine();
-    
-    // Check for exit commands
-    if (string.IsNullOrWhiteSpace(userMessage) || 
-        userMessage.Equals("exit", StringComparison.OrdinalIgnoreCase) || 
+
+    if (string.IsNullOrWhiteSpace(userMessage) ||
+        userMessage.Equals("exit", StringComparison.OrdinalIgnoreCase) ||
         userMessage.Equals("quit", StringComparison.OrdinalIgnoreCase))
     {
         Console.WriteLine("Goodbye!");
@@ -54,8 +51,8 @@ while (true)
 
     try
     {
-        // Invoke the agent and output the text result.
-        Console.WriteLine("\n" + await agent.RunAsync(userMessage) + "\n");
+        var reply = await session.SendAndWaitAsync(new MessageOptions { Prompt = userMessage });
+        Console.WriteLine($"\nAgent: {reply?.Data.Content}\n");
     }
     catch (Exception ex)
     {
