@@ -124,15 +124,8 @@ output aiSearchConnection string = aiSearchName
 output azureStorageConnection string = storageAccountName
 output cosmosDbConnection string = cosmosDbAccountName
 
-// This is used for storage naming conventions and is needed to help
-// create the right fine-grained role assignments. The naming
-// convention also uses dashes injected into the value, so we're
-// handling that here.
-// This will likely change or be made available via a different property.
 #disable-next-line BCP053
 var internalId = aiProject.properties.internalId
 output projectWorkspaceId string = '${substring(internalId, 0, 8)}-${substring(internalId, 8, 4)}-${substring(internalId, 12, 4)}-${substring(internalId, 16, 4)}-${substring(internalId, 20, 12)}'
 
-// This endpoint is also built by convention at this time but will
-// hopefully be available as a different property at some point.
 output projectEndpoint string = 'https://${aiServicesAccountName}.services.ai.azure.com/api/projects/${aiProjectName}'

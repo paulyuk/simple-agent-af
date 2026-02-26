@@ -22,8 +22,8 @@ if (-not (Test-Path ".\local.settings.json")) {
         "Values" = @{
             "AzureWebJobsStorage" = "UseDevelopmentStorage=true";
             "FUNCTIONS_WORKER_RUNTIME" = "dotnet-isolated";
-            "PROJECT_ENDPOINT" = "$AIProjectEndpoint";
-            "MODEL_DEPLOYMENT_NAME" = "$ModelDeploymentName";
+            "AZURE_AI_PROJECT_ENDPOINT" = "$AIProjectEndpoint";
+            "AZURE_AI_MODEL_DEPLOYMENT_NAME" = "$ModelDeploymentName";
             "STORAGE_CONNECTION__queueServiceUri" = "$StorageConnectionQueue";
         }
     } | ConvertTo-Json | Out-File -FilePath ".\local.settings.json" -Encoding ascii

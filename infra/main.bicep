@@ -50,13 +50,13 @@ param projectCapabilityHostName string = 'caphostproj'
 param aiServicesName string = 'agent-ai-services'
 
 @description('Model name for deployment')
-param modelName string = 'gpt-4.1-mini'
+param modelName string = 'gpt-5-mini'
 
 @description('Model format for deployment')
 param modelFormat string = 'OpenAI'
 
 @description('Model version for deployment')
-param modelVersion string = '2025-04-14'
+param modelVersion string = '2025-08-07'
 
 @description('Model deployment SKU name')
 param modelSkuName string = 'GlobalStandard'
@@ -116,130 +116,56 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   scope: rg
   params: {
     name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
+    location: location
+    tags: tags
+    kind: 'FunctionApp'
     sku: {
-      name: 'FC1'
       tier: 'FlexConsumption'
+      name: 'FC1'
     }
     reserved: true
-    location: location
-    tags: tags
   }
 }
 
-// Monitor application with Azure Monitor - Log Analytics and Application Insights
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.11.1' = {
-  name: '${uniqueString(deployment().name, location)}-loganalytics'
-  scope: rg
-  params: {
-    name: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-    location: location
-    tags: tags
-    dataRetention: 30
-  }
-}
- 
-module monitoring 'br/public:avm/res/insights/component:0.6.0' = {
-  name: '${uniqueString(deployment().name, location)}-appinsights'
-  scope: rg
-  params: {
-    name: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
-    location: location
-    tags: tags
-    workspaceResourceId: logAnalytics.outputs.resourceId
-    disableLocalAuth: true
-  }
-}
-
-// Backing storage for Azure functions backend API
-module storage 'br/public:avm/res/storage/storage-account:0.8.3' = {
+// Storage for Azure Functions
+module storage 'br/public:avm/res/storage/storage-account:0.14.3' = {
   name: 'storage'
   scope: rg
   params: {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
+    location: location
+    tags: tags
+    kind: 'StorageV2'
+    skuName: 'Standard_LRS'
     allowBlobPublicAccess: false
-    allowSharedKeyAccess: false // Disable local authentication methods as per policy
-    dnsEndpointType: 'Standard'
-    publicNetworkAccess: vnetEnabled ? 'Disabled' : 'Enabled'
-    // When vNet is enabled, restrict access but allow Azure services
-    networkAcls: vnetEnabled ? {
-      defaultAction: 'Deny'
-      bypass: 'AzureServices' // Allow Azure services including AI Agent service
-    } : {
-      defaultAction: 'Allow'
+    allowSharedKeyAccess: false
+    publicNetworkAccess: 'Enabled'
+    networkAcls: {
       bypass: 'AzureServices'
+      defaultAction: 'Allow'
     }
     blobServices: {
-      containers: [{name: deploymentStorageContainerName}]
-    }
-    queueServices: {
-      queues: [
-        { name: 'input' }
-        { name: 'output' }
+      containers: [
+        { name: deploymentStorageContainerName }
       ]
     }
-    minimumTlsVersion: 'TLS1_2'  // Enforcing TLS 1.2 for better security
+  }
+}
+
+// Monitor application with Azure Monitor
+module monitoring 'br/public:avm/ptn/azd/monitoring:0.1.0' = {
+  name: 'monitoring'
+  scope: rg
+  params: {
+    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+    applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
+    applicationInsightsDashboardName: ''
     location: location
     tags: tags
   }
 }
 
-// Dependent resources for the Azure AI workspace
-module aiDependencies './agent/standard-dependent-resources.bicep' = {
-  name: 'deps${projectName}'
-  scope: rg
-  params: {
-    location: location
-    storageName: 'stai${uniqueSuffix}'
-    aiServicesName: '${aiServicesName}${uniqueSuffix}'
-    aiSearchName: '${aiSearchName}${uniqueSuffix}'
-    cosmosDbName: '${cosmosDbName}${uniqueSuffix}'
-    tags: tags
-    enableAzureSearch: enableAzureSearch
-    enableCosmosDb: enableCosmosDb
-
-     // Model deployment parameters
-     modelName: modelName
-     modelFormat: modelFormat
-     modelVersion: modelVersion
-     modelSkuName: modelSkuName
-     modelCapacity: modelCapacity
-     modelDeploymentName: modelDeploymentName
-     modelLocation: location
-
-     aiServiceAccountResourceId: aiServiceAccountResourceId
-     aiSearchServiceResourceId: aiSearchServiceResourceId
-     aiStorageAccountResourceId: aiStorageAccountResourceId
-     aiCosmosDbAccountResourceId: aiCosmosDbAccountResourceId
-    }
-}
-
-module aiProject './agent/standard-ai-project.bicep' = {
-  name: 'proj${projectName}'
-  scope: rg
-  params: {
-    // workspace organization
-    aiServicesAccountName: aiDependencies.outputs.aiServicesName
-    aiProjectName: projectName
-    aiProjectFriendlyName: aiProjectFriendlyName
-    aiProjectDescription: aiProjectDescription
-    location: location
-    tags: tags
-    enableAzureSearch: enableAzureSearch
-    enableCosmosDb: enableCosmosDb
-    
-    // dependent resources
-    aiSearchName: aiDependencies.outputs.aiSearchName
-    aiSearchSubscriptionId: aiDependencies.outputs.aiSearchServiceSubscriptionId
-    aiSearchResourceGroupName: aiDependencies.outputs.aiSearchServiceResourceGroupName
-    storageAccountName: aiDependencies.outputs.storageAccountName
-    storageAccountSubscriptionId: aiDependencies.outputs.storageAccountSubscriptionId
-    storageAccountResourceGroupName: aiDependencies.outputs.storageAccountResourceGroupName
-    cosmosDbAccountName: aiDependencies.outputs.cosmosDbAccountName
-    cosmosDbAccountSubscriptionId: aiDependencies.outputs.cosmosDbAccountSubscriptionId
-    cosmosDbAccountResourceGroupName: aiDependencies.outputs.cosmosDbAccountResourceGroupName
-  }
-}
-
+// Flex Consumption Function App
 module api './app/api.bicep' = {
   name: 'api'
   scope: rg
@@ -247,46 +173,93 @@ module api './app/api.bicep' = {
     name: functionAppName
     location: location
     tags: tags
-    applicationInsightsName: monitoring.outputs.name
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
     appServicePlanId: appServicePlan.outputs.resourceId
     runtimeName: 'dotnet-isolated'
-    runtimeVersion: '9.0'
+    runtimeVersion: '8.0'
     storageAccountName: storage.outputs.name
-    enableBlob: storageEndpointConfig.enableBlob
-    enableQueue: storageEndpointConfig.enableQueue
-    enableTable: storageEndpointConfig.enableTable
     deploymentStorageContainerName: deploymentStorageContainerName
     identityId: apiUserAssignedIdentity.outputs.resourceId
     identityClientId: apiUserAssignedIdentity.outputs.clientId
+    enableBlob: true
+    enableQueue: true
     appSettings: {
-      PROJECT_ENDPOINT: aiProject.outputs.projectEndpoint
-      MODEL_DEPLOYMENT_NAME: modelDeploymentName
+      AZURE_CLIENT_ID: apiUserAssignedIdentity.outputs.clientId
+      AZURE_AI_PROJECT_ENDPOINT: aiProject.outputs.projectEndpoint
+      AZURE_AI_MODEL_DEPLOYMENT_NAME: modelDeploymentName
       AZURE_OPENAI_ENDPOINT: 'https://${aiDependencies.outputs.aiServicesName}.openai.azure.com/'
       AZURE_OPENAI_DEPLOYMENT_NAME: modelDeploymentName
-      AZURE_CLIENT_ID: apiUserAssignedIdentity.outputs.clientId
-      STORAGE_CONNECTION__queueServiceUri: 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'
-      STORAGE_CONNECTION__clientId: apiUserAssignedIdentity.outputs.clientId
-      STORAGE_CONNECTION__credential: 'managedidentity'
-      PROJECT_ENDPOINT__clientId: apiUserAssignedIdentity.outputs.clientId
     }
-    virtualNetworkSubnetId: ''
   }
 }
 
+// AI Dependencies (AI Services, Storage, Search, Cosmos DB)
+module aiDependencies './agent/standard-dependent-resources.bicep' = {
+  name: 'dependencies${projectName}'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    storageName: 'ai${abbrs.storageStorageAccounts}${resourceToken}'
+    aiServicesName: '${aiServicesName}${uniqueSuffix}'
+    aiSearchName: '${aiSearchName}${uniqueSuffix}'
+    cosmosDbName: '${cosmosDbName}${uniqueSuffix}'
+    enableAzureSearch: enableAzureSearch
+    enableCosmosDb: enableCosmosDb
+    modelName: modelName
+    modelFormat: modelFormat
+    modelVersion: modelVersion
+    modelSkuName: modelSkuName
+    modelCapacity: modelCapacity
+    modelDeploymentName: modelDeploymentName
+    modelLocation: location
+    aiServiceAccountResourceId: aiServiceAccountResourceId
+    aiSearchServiceResourceId: aiSearchServiceResourceId
+    aiStorageAccountResourceId: aiStorageAccountResourceId
+    aiCosmosDbAccountResourceId: aiCosmosDbAccountResourceId
+  }
+}
+
+// AI Project
+module aiProject './agent/standard-ai-project.bicep' = {
+  name: 'project${projectName}'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    aiServicesAccountName: aiDependencies.outputs.aiServicesName
+    aiProjectName: projectName
+    aiProjectFriendlyName: aiProjectFriendlyName
+    aiProjectDescription: aiProjectDescription
+    enableAzureSearch: enableAzureSearch
+    enableCosmosDb: enableCosmosDb
+    cosmosDbAccountName: aiDependencies.outputs.cosmosDbAccountName
+    cosmosDbAccountSubscriptionId: aiDependencies.outputs.cosmosDbAccountSubscriptionId
+    cosmosDbAccountResourceGroupName: aiDependencies.outputs.cosmosDbAccountResourceGroupName
+    storageAccountName: aiDependencies.outputs.storageAccountName
+    storageAccountSubscriptionId: aiDependencies.outputs.storageAccountSubscriptionId
+    storageAccountResourceGroupName: aiDependencies.outputs.storageAccountResourceGroupName
+    aiSearchName: aiDependencies.outputs.aiSearchName
+    aiSearchSubscriptionId: aiDependencies.outputs.aiSearchServiceSubscriptionId
+    aiSearchResourceGroupName: aiDependencies.outputs.aiSearchServiceResourceGroupName
+  }
+}
+
+// AI Project Role Assignments
 module projectRoleAssignments './agent/standard-ai-project-role-assignments.bicep' = {
   name: 'rbac${projectName}'
   scope: rg
   params: {
     aiProjectPrincipalId: aiProject.outputs.aiProjectPrincipalId
     userPrincipalId: principalId
-    allowUserIdentityPrincipal: !empty(principalId) // Enable user identity role assignments
+    allowUserIdentityPrincipal: !empty(principalId)
     aiServicesName: aiDependencies.outputs.aiServicesName
     aiSearchName: aiDependencies.outputs.aiSearchName
     aiCosmosDbName: aiDependencies.outputs.cosmosDbAccountName
     aiStorageAccountName: aiDependencies.outputs.storageAccountName
     integrationStorageAccountName: storage.outputs.name
     functionAppManagedIdentityPrincipalId: apiUserAssignedIdentity.outputs.principalId
-    allowFunctionAppIdentityPrincipal: true // Enable function app identity role assignments
+    allowFunctionAppIdentityPrincipal: true
     enableAzureSearch: enableAzureSearch
     enableCosmosDb: enableCosmosDb
   }
@@ -301,7 +274,6 @@ module aiProjectCapabilityHost './agent/standard-ai-project-capability-host.bice
     aiSearchConnection: aiProject.outputs.aiSearchConnection
     azureStorageConnection: aiProject.outputs.azureStorageConnection
     cosmosDbConnection: aiProject.outputs.cosmosDbConnection
-
     accountCapHost: '${accountCapabilityHostName}${uniqueSuffix}'
     projectCapHost: '${projectCapabilityHostName}${uniqueSuffix}'
     enableAzureSearch: enableAzureSearch
@@ -325,11 +297,11 @@ module postCapabilityHostCreationRoleAssignments './agent/post-capability-host-r
 
 // Define the configuration object locally to pass to the modules
 var storageEndpointConfig = {
-  enableBlob: true  // Required for AzureWebJobsStorage, .zip deployment, Event Hubs trigger and Timer trigger checkpointing
-  enableQueue: true  // Required for Durable Functions and MCP trigger
-  enableTable: false  // Required for Durable Functions and OpenAI triggers and bindings
-  enableFiles: false   // Not required, used in legacy scenarios
-  allowUserIdentityPrincipal: !empty(principalId)   // Allow interactive user identity to access for testing and debugging
+  enableBlob: true
+  enableQueue: true
+  enableTable: false
+  enableFiles: false
+  allowUserIdentityPrincipal: !empty(principalId)
 }
 
 // Consolidated Role Assignments
@@ -338,7 +310,7 @@ module rbac 'app/rbac.bicep' = {
   scope: rg
   params: {
     storageAccountName: storage.outputs.name
-    appInsightsName: monitoring.outputs.name
+    appInsightsName: monitoring.outputs.applicationInsightsName
     managedIdentityPrincipalId: apiUserAssignedIdentity.outputs.principalId
     userIdentityPrincipalId: principalId
     enableBlob: storageEndpointConfig.enableBlob
@@ -348,34 +320,8 @@ module rbac 'app/rbac.bicep' = {
   }
 }
 
-// Virtual Network & private endpoint to blob storage (disabled for now)
-// module serviceVirtualNetwork 'app/vnet.bicep' =  if (vnetEnabled) {
-//   name: 'serviceVirtualNetwork'
-//   scope: rg
-//   params: {
-//     location: location
-//     tags: tags
-//     vNetName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
-//   }
-// }
-
-// module storagePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = if (vnetEnabled) {
-//   name: 'servicePrivateEndpoint'
-//   scope: rg
-//   params: {
-//     location: location
-//     tags: tags
-//     virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
-//     subnetName: serviceVirtualNetwork.outputs.peSubnetName
-//     resourceName: storage.outputs.name
-//     enableBlob: storageEndpointConfig.enableBlob
-//     enableQueue: storageEndpointConfig.enableQueue
-//     enableTable: storageEndpointConfig.enableTable
-//   }
-// }
-
 // App outputs
-output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.connectionString
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
 output SERVICE_API_NAME string = api.outputs.SERVICE_API_NAME

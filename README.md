@@ -1,10 +1,11 @@
 # Simple Agent QuickStart (.NET Copilot SDK)
 
-A simple AI agent built with the GitHub Copilot SDK, running as a .NET console app.
+A simple AI agent built with the GitHub Copilot SDK, running as an Azure Function.
 
 ## Prerequisites
 
 - [.NET 8.0+](https://dotnet.microsoft.com/download)
+- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local#install-the-azure-functions-core-tools)
 - [Azure Developer CLI (azd)](https://aka.ms/azd-install) (only needed for deploying Microsoft Foundry resources)
 - Access to an AI model via one of:
   - **GitHub Copilot subscription** — models are available automatically
@@ -24,6 +25,7 @@ This provisions all resources and configures local development automatically.
 ### What Gets Deployed
 
 - Microsoft Foundry project with GPT-5-mini model
+- Azure Functions app (.NET 8, Flex Consumption plan)
 - Storage, monitoring, and all necessary RBAC role assignments
 - Optional: Search for vector store (disabled by default)
 - Optional: Cosmos DB for agent thread storage (disabled by default)
@@ -32,17 +34,33 @@ This provisions all resources and configures local development automatically.
 
 1. Clone the repository
 
-2. Run the agent:
+2. Run the function locally:
 
    ```bash
-   dotnet run
+   func start
    ```
 
-3. Enter a message like `what are the laws?` — type `exit` or `quit` to end the session.
+3. Test the agent (in a new terminal):
+
+   ```bash
+   # Interactive chat client
+   python3 chat.py
+
+   # Or use curl directly
+   curl -X POST http://localhost:7071/api/ask -d "what are the laws"
+   ```
+
+   Set `AGENT_URL` to point to a deployed instance:
+
+   ```bash
+   AGENT_URL=https://<your-function-app>.azurewebsites.net python3 chat.py
+   ```
 
 ## Source Code
 
-The agent logic is in [`Program.cs`](Program.cs). It creates a `CopilotClient`, configures a session with a system message (Asimov's Three Laws of Robotics), and runs an interactive conversation loop where user input is sent to the agent and responses are printed.
+The agent logic is in [`Ask.cs`](Ask.cs). It creates a `CopilotClient`, configures a session with a system message (Asimov's Three Laws of Robotics), and exposes an HTTP endpoint (`/api/ask`) that accepts a prompt and returns the agent's response.
+
+[`chat.py`](chat.py) is a lightweight console client that POSTs messages to the function in a loop, giving you an interactive chat experience. It defaults to `http://localhost:7071` but can be pointed at a deployed instance via the `AGENT_URL` environment variable.
 
 ## Using Microsoft Foundry (BYOK)
 

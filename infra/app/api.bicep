@@ -28,11 +28,8 @@ var kind = 'functionapp'
 
 // Create base application settings
 var baseAppSettings = {
-  // Only include required credential settings unconditionally
   AzureWebJobsStorage__credential: 'managedidentity'
   AzureWebJobsStorage__clientId: identityClientId
-  
-  // Application Insights settings are always included
   APPLICATIONINSIGHTS_AUTHENTICATION_STRING: applicationInsightsIdentity
   APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
 }
@@ -105,5 +102,4 @@ module api 'br/public:avm/res/web/site:0.15.1' = {
 }
 
 output SERVICE_API_NAME string = api.outputs.name
-// Ensure output is always string, handle potential null from module output if SystemAssigned is not used
 output SERVICE_API_IDENTITY_PRINCIPAL_ID string = identityType == 'SystemAssigned' ? api.outputs.?systemAssignedMIPrincipalId ?? '' : ''

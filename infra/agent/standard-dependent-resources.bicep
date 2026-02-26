@@ -62,10 +62,6 @@ var skipAzureSearchCreation = aiSearchServiceResourceId != '' || !enableAzureSea
 var aiStorageExists = aiStorageAccountResourceId != ''
 var skipCosmosDbCreation = aiCosmosDbAccountResourceId != '' || !enableCosmosDb
 
-// Create an AI Service account and model deployment if it doesn't already exist
-
-
-
 resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = if(!aiServiceExists) {
   name: aiServicesName
   location: modelLocation
@@ -85,7 +81,6 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = 
       ipRules: []
     }    
     publicNetworkAccess: 'Enabled'
-    // API-key based auth is not supported for the Agent service and policy requires it to be disabled
     disableLocalAuth: true
   }
 }
@@ -105,7 +100,6 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
   }
 }
 
-// Create an AI Search Service if it doesn't already exist
 resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = if(!skipAzureSearchCreation) {
   name: aiSearchName
   location: location
@@ -129,8 +123,6 @@ resource aiSearch 'Microsoft.Search/searchServices@2024-06-01-preview' = if(!ski
   }
 }
 
-// Create a Storage account if it doesn't already exist
-
 param sku string = 'Standard_LRS'
 
 resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = if(!aiStorageExists) {
@@ -152,8 +144,6 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = if(!aiStorageE
     allowSharedKeyAccess: false
   }
 }
-
-// Create a Cosmos DB Account if it doesn't already exist
 
 var canaryRegions = ['eastus2euap', 'centraluseuap']
 var cosmosDbRegion = contains(canaryRegions, location) ? 'eastus2' : location

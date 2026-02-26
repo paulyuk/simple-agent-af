@@ -2,7 +2,7 @@
 // the containers will not yet exist.
 
 param aiProjectPrincipalId string
-param aiProjectPrincipalType string = 'ServicePrincipal' // Workaround for https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-template#new-service-principal
+param aiProjectPrincipalType string = 'ServicePrincipal'
 param aiProjectWorkspaceId string
 
 param aiStorageAccountName string
@@ -11,14 +11,10 @@ param cosmosDbAccountName string
 param enableCosmosDb bool = false
 
 // Assignments for Storage Account containers
-// ------------------------------------------------------------------
 
 resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
   name: aiStorageAccountName
 }
-
-// Assign AI Project Storage Blob Data Owner Role for the dependent resource storage account.
-// Limits ownership to containers specific to the Project Workspace.
 
 var storageBlobDataOwnerRoleDefinitionId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
 var conditionStr = '((!(ActionMatches{\'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read\'})  AND  !(ActionMatches{\'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/filter/action\'}) AND  !(ActionMatches{\'Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write\'}) ) OR (@Resource[Microsoft.Storage/storageAccounts/blobServices/containers:name] StringStartsWithIgnoreCase \'${aiProjectWorkspaceId}\' AND @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:name] StringLikeIgnoreCase \'*-azureml-agent\'))'
@@ -36,7 +32,6 @@ resource storageBlobDataOwnerAssignment 'Microsoft.Authorization/roleAssignments
 }
 
 // Assignments for CosmosDB containers
-// ------------------------------------------------------------------
 
 var userThreadName = '${aiProjectWorkspaceId}-thread-message-store'
 var systemThreadName = '${aiProjectWorkspaceId}-system-thread-message-store'
@@ -46,7 +41,6 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview
   name: cosmosDbAccountName
 }
 
-// Reference existing database
 resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-12-01-preview' existing = if (enableCosmosDb) {
   parent: cosmosAccount
   name: 'enterprise_memory'
