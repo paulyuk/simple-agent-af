@@ -44,7 +44,7 @@ This provisions all resources and configures local development automatically.
 
    ```bash
    # Interactive chat client
-   python3 chat.py
+   dotnet run --project Chat.csproj
 
    # Or use curl directly
    curl -X POST http://localhost:7071/api/ask -d "what are the laws"
@@ -53,14 +53,14 @@ This provisions all resources and configures local development automatically.
    Set `AGENT_URL` to point to a deployed instance:
 
    ```bash
-   AGENT_URL=https://<your-function-app>.azurewebsites.net python3 chat.py
+   AGENT_URL=https://<your-function-app>.azurewebsites.net dotnet run --project Chat.csproj
    ```
 
 ## Source Code
 
 The agent logic is in [`Ask.cs`](Ask.cs). It creates a `CopilotClient`, configures a session with a system message (Asimov's Three Laws of Robotics), and exposes an HTTP endpoint (`/api/ask`) that accepts a prompt and returns the agent's response.
 
-[`chat.py`](chat.py) is a lightweight console client that POSTs messages to the function in a loop, giving you an interactive chat experience. It defaults to `http://localhost:7071` but can be pointed at a deployed instance via the `AGENT_URL` environment variable.
+[`Chat.cs`](Chat.cs) is a lightweight .NET console client that POSTs messages to the function in a loop, giving you an interactive chat experience. It defaults to `http://localhost:7071` but can be pointed at a deployed instance via the `AGENT_URL` environment variable.
 
 ## Using Microsoft Foundry (BYOK)
 
